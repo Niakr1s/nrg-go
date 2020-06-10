@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math/rand"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/client"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
@@ -19,12 +21,16 @@ func main() {
 	client.Init()
 
 	// for test
-	circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)
-	player := entity.NewEntity().
-		WithComponent(component.ShapeID, circle).
-		WithComponent(component.VectorID, geo.NewVector(0)).
-		WithTags(component.PlayerTagID, component.UserTagID)
-	client.Reg.AddEntity(player)
+	for i := 0; i < 1000; i++ {
+		circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)
+		player := entity.NewEntity().
+			WithComponent(component.ShapeID, circle).
+			WithComponent(component.VectorID, geo.NewVector(rand.Float64()*2*3.14)).
+			WithTags(component.PlayerTagID, component.UserTagID)
+		client.Reg.AddEntity(player)
+	}
+
+	client.StartProduceBoard()
 
 	if err := ebiten.RunGame(client); err != nil {
 		log.Fatal(err)
