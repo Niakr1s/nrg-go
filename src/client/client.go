@@ -29,6 +29,7 @@ func New() *Client {
 func (c *Client) Init() {
 	ebiten.SetWindowSize(config.ScreenWidth, config.ScreenHeight)
 	ebiten.SetWindowTitle("Hello, World!")
+	ebiten.SetRunnableOnUnfocused(true)
 
 	c.keyCh = key.NewListener().StartPollKeys()
 	go func() {
