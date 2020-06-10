@@ -35,33 +35,7 @@ func (c *Client) Init() {
 	ebiten.SetRunnableOnUnfocused(true)
 
 	c.keyCh = key.NewListener().StartPollKeys(c.nextPollKey)
-	go func() {
-		for {
-			select {
-			case pressed := <-c.keyCh.ExitCh:
-				log.Tracef("exit key pressed, %v", pressed)
-			case pressed := <-c.keyCh.FireCh:
-				log.Tracef("fire key pressed, %v", pressed)
-			case changedVec := <-c.keyCh.VectorCh:
-				c.Reg.RLock()
-				for _, e := range c.Reg.Entities {
-					e.RLock()
-					if e.HasTag(component.UserTagID) {
-						e.RUnlock()
-						e.Lock()
-						e = e.RemoveComponent(component.VectorID)
-						if changedVec != nil {
-							e = e.WithComponent(component.VectorID, *changedVec)
-						}
-						e.Unlock()
-						e.RLock()
-					}
-					e.RUnlock()
-				}
-				c.Reg.RUnlock()
-			}
-		}
-	}()
+	c.startKeyProcessing()
 }
 
 // Update ...
@@ -150,4 +124,34 @@ func max(first int, other ...int) int {
 // Layout ...
 func (c *Client) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return config.ScreenWidth, config.ScreenHeight
+}
+
+func (c *Client) startKeyProcessing() {
+	go func() {
+		for {
+			select {
+			case pressed := <-c.keyCh.ExitCh:
+				log.Tracef("exit key pressed, %v", pressed)
+			case pressed := <-c.keyCh.FireCh:
+				log.Tracef("fire key pressed, %v", pressed)
+			case changedVec := <-c.keyCh.VectorCh:
+				c.Reg.RLock()
+				for _, e := range c.Reg.Entities {
+					e.RLock()
+					if e.HasTag(component.UserTagID) {
+						e.RUnlock()
+						e.Lock()
+						e = e.RemoveComponent(component.VectorID)
+						if changedVec != nil {
+							e = e.WithComponent(component.VectorID, *changedVec)
+						}
+						e.Unlock()
+						e.RLock()
+					}
+					e.RUnlock()
+				}
+				c.Reg.RUnlock()
+			}
+		}
+	}()
 }
