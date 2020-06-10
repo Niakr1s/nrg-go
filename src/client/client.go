@@ -1,7 +1,11 @@
 package client
 
 import (
+	"image/color"
+	"math"
+
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/niakr1s/nrg-go/src/client/key"
 	"github.com/niakr1s/nrg-go/src/config"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
@@ -41,12 +45,54 @@ func (c *Client) Update(screen *ebiten.Image) error {
 
 // Draw ...
 func (c *Client) Draw(screen *ebiten.Image) {
+	c.drawBoard(screen)
+}
+
+func (c *Client) drawBoard(screen *ebiten.Image) {
+	board, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
+	ebitenutil.DrawRect(board, 0, 0, 1000, 1000, color.Gray16{0xaaaf})
 	for _, e := range c.Reg.Entities {
 		if c := e.GetComponent(component.DrawableID); e != nil {
 			c := c.(component.Drawable)
-			c.Draw(screen)
+			c.Draw(board)
 		}
 	}
+	op := &ebiten.DrawImageOptions{}
+
+	swI, shI := screen.Size()
+	bwI, bhI := board.Size()
+
+	// sizes of screen and board
+	sw, sh := float64(swI), float64(shI)
+	bw, bh := float64(bwI), float64(bhI)
+
+	scale := 0.9 * math.Min(sw, sh) / math.Max(bw, bh)
+
+	// scaled board size
+	bw, bh = bw*scale, bh*scale
+
+	op.GeoM.Scale(scale, scale)
+	op.GeoM.Translate((sw-bw)/2, (sh-bh)/2)
+
+	screen.DrawImage(board, op)
+}
+
+func min(first int, other ...int) int {
+	for _, i := range other {
+		if i < first {
+			first = i
+		}
+	}
+	return first
+}
+
+func max(first int, other ...int) int {
+	for _, i := range other {
+		if i > first {
+			first = i
+		}
+	}
+	return first
 }
 
 // Layout ...
