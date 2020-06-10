@@ -1,12 +1,32 @@
 package key
 
 import (
+	"fmt"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/inpututil"
 )
 
 // Key ...
 type Key int
+
+func (k Key) String() string {
+	switch k {
+	case Exit:
+		return "Exit"
+	case Fire:
+		return "Fire"
+	case Up:
+		return "Up"
+	case Down:
+		return "Down"
+	case Left:
+		return "Left"
+	case Right:
+		return "Right"
+	}
+	return "Unknown key"
+}
 
 // keys
 const (
@@ -24,6 +44,13 @@ const (
 type Event struct {
 	Key     Key
 	Pressed bool
+}
+
+func (e Event) String() string {
+	if e.Pressed {
+		return fmt.Sprintf("key %s pressed", e.Key)
+	}
+	return fmt.Sprintf("key %s released", e.Key)
 }
 
 // Bindings ...
