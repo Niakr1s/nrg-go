@@ -6,6 +6,7 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/geo"
+	"github.com/niakr1s/nrg-go/src/img"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -17,7 +18,7 @@ func main() {
 	client.Init()
 
 	// for test
-	circle := &geo.Circle{}
+	circle := geo.NewCircle(500, 500, 10, img.WhiteCircle)
 	player := entity.NewEntity().WithComponent(component.DrawableID, circle)
 	client.Reg.AddEntity(player)
 

@@ -1,6 +1,8 @@
 package geo
 
 import (
+	"image"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/img"
 	log "github.com/sirupsen/logrus"
@@ -10,14 +12,20 @@ import (
 type Circle struct {
 	Pos
 	Radius
+
+	image image.Image
 }
 
-func (c *Circle) Draw(board *ebiten.Image) {
-	image, err := img.Load("data/white_circle.png")
+func NewCircle(x, y, r float64, path string) *Circle {
+	image, err := img.Load(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	eImage, err := ebiten.NewImageFromImage(image, ebiten.FilterDefault)
+	return &Circle{Pos: NewPos(x, y), Radius: NewRadius(r), image: image}
+}
+
+func (c *Circle) Draw(board *ebiten.Image) {
+	eImage, err := ebiten.NewImageFromImage(c.image, ebiten.FilterDefault)
 	if err != nil {
 		log.Fatal(err)
 	}
