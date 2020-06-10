@@ -18,7 +18,7 @@ func main() {
 	client.Init()
 
 	// for test
-	circle := geo.NewCircle(500, 500, 10, img.WhiteCircle)
+	circle := geo.NewCircle(500, 500, 50, img.WhiteCircle)
 	player := entity.NewEntity().WithComponent(component.DrawableID, circle)
 	client.Reg.AddEntity(player)
 

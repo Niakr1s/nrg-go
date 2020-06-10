@@ -29,5 +29,13 @@ func (c *Circle) Draw(board *ebiten.Image) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	board.DrawImage(eImage, &ebiten.DrawImageOptions{})
+
+	op := &ebiten.DrawImageOptions{}
+	w, h := eImage.Size()
+	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
+	scale := float64(c.Radius) / float64(w)
+	op.GeoM.Scale(scale, scale)
+	op.GeoM.Translate(c.X, c.Y)
+
+	board.DrawImage(eImage, op)
 }
