@@ -4,17 +4,21 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/client/key"
 	"github.com/niakr1s/nrg-go/src/config"
+	"github.com/niakr1s/nrg-go/src/ecs/component"
+	"github.com/niakr1s/nrg-go/src/ecs/registry"
 	log "github.com/sirupsen/logrus"
 )
 
 // Client ...
 type Client struct {
 	keyCh <-chan key.Event
+
+	Reg *registry.Registry
 }
 
 // New ...
 func New() *Client {
-	return &Client{}
+	return &Client{Reg: registry.NewRegistry()}
 }
 
 // Init ...
@@ -32,12 +36,17 @@ func (c *Client) Init() {
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
-
 	return nil
 }
 
 // Draw ...
 func (c *Client) Draw(screen *ebiten.Image) {
+	for _, e := range c.Reg.Entities {
+		if c := e.GetComponent(component.DrawableID); e != nil {
+			c := c.(component.Drawable)
+			c.Draw(screen)
+		}
+	}
 }
 
 // Layout ...

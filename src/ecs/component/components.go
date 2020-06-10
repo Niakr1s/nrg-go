@@ -5,16 +5,25 @@ import (
 	"github.com/niakr1s/nrg-go/src/geo"
 )
 
+type ID int
+
+// IDs
+const (
+	DrawableID ID = iota
+	IntersectableID
+	MovableID
+)
+
 type Component interface{}
 
 type Drawable interface {
-	Draw(*ebiten.Image)
+	Draw(board *ebiten.Image)
 }
 
 type Intersectable interface {
-	Intersects(Intersectable) bool
+	Intersects(rhs Intersectable) bool
 }
 
 type Movable interface {
-	Move(geo.Vector, geo.Distance)
+	Move(vec geo.Vector, dist geo.Distance)
 }
