@@ -14,16 +14,18 @@ import (
 
 // Client ...
 type Client struct {
-	keyCh <-chan key.Event
+	keyCh key.ListenResult
 
 	Reg *registry.Registry
 
 	board chan *ebiten.Image
+
+	nextPollKey chan struct{}
 }
 
 // New ...
 func New() *Client {
-	return &Client{Reg: registry.NewRegistry(), board: make(chan *ebiten.Image)}
+	return &Client{Reg: registry.NewRegistry(), board: make(chan *ebiten.Image), nextPollKey: make(chan struct{})}
 }
 
 // Init ...
@@ -32,16 +34,39 @@ func (c *Client) Init() {
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetRunnableOnUnfocused(true)
 
-	c.keyCh = key.NewListener().StartPollKeys()
+	c.keyCh = key.NewListener().StartPollKeys(c.nextPollKey)
 	go func() {
 		for {
-			log.Tracef("%s", <-c.keyCh)
+			select {
+			case pressed := <-c.keyCh.ExitCh:
+				log.Tracef("exit key pressed, %v", pressed)
+			case pressed := <-c.keyCh.FireCh:
+				log.Tracef("fire key pressed, %v", pressed)
+			case changedVec := <-c.keyCh.VectorCh:
+				c.Reg.RLock()
+				for _, e := range c.Reg.Entities {
+					e.RLock()
+					if e.HasTag(component.UserTagID) {
+						e.RUnlock()
+						e.Lock()
+						e = e.RemoveComponent(component.VectorID)
+						if changedVec != nil {
+							e = e.WithComponent(component.VectorID, *changedVec)
+						}
+						e.Unlock()
+						e.RLock()
+					}
+					e.RUnlock()
+				}
+				c.Reg.RUnlock()
+			}
 		}
 	}()
 }
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
+	c.nextPollKey <- struct{}{}
 	c.Reg.RLock()
 	defer c.Reg.RUnlock()
 	for _, e := range c.Reg.Entities {

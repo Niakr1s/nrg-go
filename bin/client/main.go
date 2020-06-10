@@ -20,14 +20,19 @@ func main() {
 	client := client.New()
 	client.Init()
 	// for test
-	for i := 0; i < 10000; i++ {
+	for i := 0; i < 100; i++ {
 		circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)
 		player := entity.NewEntity().
 			WithComponent(component.ShapeID, circle).
 			WithComponent(component.VectorID, geo.NewVector(rand.Float64()*2*3.14)).
-			WithTags(component.PlayerTagID, component.UserTagID)
+			WithTags(component.PlayerTagID)
 		client.Reg.AddEntity(player)
 	}
+	circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)
+	player := entity.NewEntity().
+		WithComponent(component.ShapeID, circle).
+		WithTags(component.PlayerTagID, component.UserTagID)
+	client.Reg.AddEntity(player)
 
 	client.StartProduceBoard()
 

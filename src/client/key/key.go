@@ -1,11 +1,11 @@
 package key
 
 import (
-	"fmt"
-	"time"
+	"math"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/inpututil"
+	"github.com/niakr1s/nrg-go/src/geo"
 )
 
 // Key ...
@@ -41,17 +41,14 @@ const (
 	Right
 )
 
-// Event ...
-type Event struct {
-	Key     Key
-	Pressed bool
+type ListenResult struct {
+	ExitCh   chan bool
+	FireCh   chan bool
+	VectorCh chan *geo.Vector
 }
 
-func (e Event) String() string {
-	if e.Pressed {
-		return fmt.Sprintf("key %s pressed", e.Key)
-	}
-	return fmt.Sprintf("key %s released", e.Key)
+func NewListenResult() ListenResult {
+	return ListenResult{ExitCh: make(chan bool), FireCh: make(chan bool), VectorCh: make(chan *geo.Vector)}
 }
 
 // Bindings ...
@@ -90,31 +87,101 @@ type Listener struct {
 	keyBindings Bindings
 	keyStates   keyStates
 
-	out chan Event
+	out ListenResult
 }
 
 // NewListener ...
 func NewListener() *Listener {
-	return &Listener{keyBindings: NewDefaultBindings(), keyStates: newKeyStates(), out: make(chan Event, 10)}
+	return &Listener{keyBindings: NewDefaultBindings(), keyStates: newKeyStates(), out: NewListenResult()}
 }
 
-// StartPollKeys ...
-func (l *Listener) StartPollKeys() <-chan Event {
-	go l.loop()
+// StartPollKeys starts polling keys. frameCh is used to poll keyboard not faster than framerate.
+func (l *Listener) StartPollKeys(frameCh <-chan struct{}) ListenResult {
+	go l.loop(frameCh)
 	return l.out
 }
 
-func (l *Listener) loop() {
+func (l *Listener) loop(frameCh <-chan struct{}) {
 	for {
+		<-frameCh
+		vectorChanged := false
 		for eKey, Key := range l.keyBindings {
-			if inpututil.IsKeyJustPressed(eKey) && !l.keyStates[Key] {
-				l.keyStates[Key] = true
-				l.out <- Event{Key, true}
-			} else if inpututil.IsKeyJustReleased(eKey) && l.keyStates[Key] {
-				l.keyStates[Key] = false
-				l.out <- Event{Key, false}
+			eKey, Key := eKey, Key
+			if inpututil.IsKeyJustPressed(eKey) {
+				switch Key {
+				case Fire:
+					l.out.FireCh <- true
+				case Exit:
+					l.out.ExitCh <- true
+				case Up, Down, Left, Right:
+					vectorChanged = true
+					l.keyStates[Key] = true
+				}
+			} else if inpututil.IsKeyJustReleased(eKey) {
+				switch Key {
+				case Fire:
+					l.out.FireCh <- false
+				case Exit:
+					l.out.ExitCh <- false
+				case Up, Down, Left, Right:
+					vectorChanged = true
+					l.keyStates[Key] = false
+				}
 			}
 		}
-		<-time.After(time.Millisecond * 1000 / 60)
+		if vectorChanged {
+			l.out.VectorCh <- getVector(l.keyStates[Up], l.keyStates[Down], l.keyStates[Left], l.keyStates[Right])
+		}
 	}
+}
+
+// getVector is dumbest function ever
+func getVector(up, down, left, right bool) *geo.Vector {
+	// up
+	if left && up && right && !down || up && !left && !right && !down {
+		res := geo.Vector(1.5 * math.Pi)
+		return &res
+	}
+	// down
+	if left && down && right && !up || down && !left && !right && !up {
+		res := geo.Vector(0.5 * math.Pi)
+		return &res
+	}
+	// left
+	if left && up && down && !right || left && !up && !down && !right {
+		res := geo.Vector(math.Pi)
+		return &res
+	}
+	// right
+	if right && up && down && !left || right && !left && !up && !down {
+		res := geo.Vector(0)
+		return &res
+	}
+	// left up
+	if left && up && !right && !down {
+		res := geo.Vector(1.25 * math.Pi)
+		return &res
+	}
+	// right up
+	if right && up && !left && !down {
+		res := geo.Vector(1.75 * math.Pi)
+		return &res
+	}
+	// right down
+	if right && down && !left && !up {
+		res := geo.Vector(0.25 * math.Pi)
+		return &res
+	}
+	// left down
+	if left && down && !right && !up {
+		res := geo.Vector(0.75 * math.Pi)
+		return &res
+	}
+	if up && down && left && right || !up && !down && !left && !right {
+		return nil
+	}
+	if up && down && !left && !right || left && right && !up && !down {
+		return nil
+	}
+	return nil
 }

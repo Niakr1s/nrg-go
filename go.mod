@@ -5,5 +5,5 @@ go 1.14
 require (
 	github.com/hajimehoshi/ebiten v1.11.2
 	github.com/sirupsen/logrus v1.6.0
-	github.com/stretchr/testify v1.3.0 // indirect
+	github.com/stretchr/testify v1.3.0
 )
