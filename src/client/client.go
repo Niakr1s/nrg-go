@@ -5,7 +5,6 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/niakr1s/nrg-go/src/client/key"
 	"github.com/niakr1s/nrg-go/src/config"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
@@ -18,11 +17,13 @@ type Client struct {
 	keyCh <-chan key.Event
 
 	Reg *registry.Registry
+
+	board chan *ebiten.Image
 }
 
 // New ...
 func New() *Client {
-	return &Client{Reg: registry.NewRegistry()}
+	return &Client{Reg: registry.NewRegistry(), board: make(chan *ebiten.Image)}
 }
 
 // Init ...
@@ -56,15 +57,26 @@ func (c *Client) Draw(screen *ebiten.Image) {
 	c.drawBoard(screen)
 }
 
-func (c *Client) drawBoard(screen *ebiten.Image) {
-	board, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
-	ebitenutil.DrawRect(board, 0, 0, 1000, 1000, color.Gray16{0xaaaf})
-	for _, e := range c.Reg.Entities {
-		if c := e.GetComponent(component.ShapeID); c != nil {
-			c := c.(component.Shape)
-			c.Draw(board)
+func (c *Client) StartProduceBoard() {
+	go func() {
+		for {
+			board, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
+			board.Fill(color.Gray16{0xaaaf})
+			c.Reg.RLock()
+			for _, e := range c.Reg.Entities {
+				if c := e.GetComponent(component.ShapeID); c != nil {
+					c := c.(component.Shape)
+					c.Draw(board)
+				}
+			}
+			c.Reg.RUnlock()
+			c.board <- board
 		}
-	}
+	}()
+}
+
+func (c *Client) drawBoard(screen *ebiten.Image) {
+	board := <-c.board
 	op := &ebiten.DrawImageOptions{}
 
 	swI, shI := screen.Size()

@@ -17,6 +17,7 @@ func main() {
 
 	client := client.New()
 	client.Init()
+	client.StartProduceBoard()
 
 	// for test
 	circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)

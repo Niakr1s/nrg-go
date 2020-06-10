@@ -1,9 +1,14 @@
 package registry
 
-import "github.com/niakr1s/nrg-go/src/ecs/entity"
+import (
+	"sync"
+
+	"github.com/niakr1s/nrg-go/src/ecs/entity"
+)
 
 // Registry contains entities
 type Registry struct {
+	sync.RWMutex
 	lastID entity.EntityID
 
 	Entities map[entity.EntityID]*entity.Entity
