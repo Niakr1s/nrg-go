@@ -7,9 +7,11 @@ import (
 
 	// init png
 	_ "image/png"
+
+	"github.com/hajimehoshi/ebiten"
 )
 
-var cache map[string]image.Image
+var cache map[string]*ebiten.Image
 
 // paths
 const (
@@ -19,10 +21,10 @@ const (
 )
 
 func init() {
-	cache = make(map[string]image.Image)
+	cache = make(map[string]*ebiten.Image)
 }
 
-func Load(imagePath string) (image.Image, error) {
+func Load(imagePath string) (*ebiten.Image, error) {
 	if i, ok := cache[imagePath]; ok {
 		return i, nil
 	}
@@ -35,6 +37,10 @@ func Load(imagePath string) (image.Image, error) {
 	if err != nil {
 		return nil, err
 	}
-	cache[imagePath] = img
-	return img, nil
+	eImg, err := ebiten.NewImageFromImage(img, ebiten.FilterDefault)
+	if err != nil {
+		return nil, err
+	}
+	cache[imagePath] = eImg
+	return eImg, nil
 }
