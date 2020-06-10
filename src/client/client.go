@@ -3,6 +3,7 @@ package client
 import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/client/key"
+	"github.com/niakr1s/nrg-go/src/config"
 )
 
 // Client ...
@@ -17,7 +18,7 @@ func New() *Client {
 
 // Init ...
 func (c *Client) Init() {
-	ebiten.SetWindowSize(800, 600)
+	ebiten.SetWindowSize(config.ScreenWidth, config.ScreenHeight)
 	ebiten.SetWindowTitle("Hello, World!")
 
 	c.keyCh = key.NewListener().StartPollKeys()
@@ -34,5 +35,5 @@ func (c *Client) Draw(screen *ebiten.Image) {
 
 // Layout ...
 func (c *Client) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return 800, 600
+	return config.ScreenWidth, config.ScreenHeight
 }
