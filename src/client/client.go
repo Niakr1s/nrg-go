@@ -60,7 +60,6 @@ func (c *Client) Draw(screen *ebiten.Image) {
 
 func (c *Client) StartProduceBoard() {
 	go func() {
-		counter := 0
 		for {
 			board, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
 			board.Fill(color.Gray16{0xaaaf})
@@ -72,8 +71,6 @@ func (c *Client) StartProduceBoard() {
 				}
 			}
 			c.Reg.RUnlock()
-			counter++
-			log.Info(counter)
 			c.board <- board
 		}
 	}()

@@ -2,7 +2,6 @@ package main
 
 import (
 	"math/rand"
-	"time"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/client"
@@ -20,14 +19,8 @@ func main() {
 
 	client := client.New()
 	client.Init()
-
-	go func() {
-		<-time.After(time.Second * 5)
-		log.Fatal()
-	}()
-
 	// for test
-	for i := 0; i < 100000; i++ {
+	for i := 0; i < 10000; i++ {
 		circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)
 		player := entity.NewEntity().
 			WithComponent(component.ShapeID, circle).
