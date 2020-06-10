@@ -11,6 +11,13 @@ import (
 
 var cache map[string]image.Image
 
+// paths
+const (
+	WhiteCircle = "data/white_circle.png"
+	RedCircle   = "data/red_circle.png"
+	BlueCircle  = "data/blue_circle.png"
+)
+
 func init() {
 	cache = make(map[string]image.Image)
 }
