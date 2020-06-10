@@ -1,12 +1,17 @@
 package entity
 
-import "github.com/niakr1s/nrg-go/src/ecs/component"
+import (
+	"sync"
+
+	"github.com/niakr1s/nrg-go/src/ecs/component"
+)
 
 type EntityID int
 
 // Entity holds ID and Components
 type Entity struct {
 	ID EntityID
+	sync.RWMutex
 
 	Components map[component.ID]component.Component
 }

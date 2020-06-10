@@ -42,12 +42,16 @@ func (c *Client) Init() {
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
+	c.Reg.RLock()
+	defer c.Reg.RUnlock()
 	for _, e := range c.Reg.Entities {
+		e.Lock()
 		if vec, shape := e.GetComponent(component.VectorID), e.GetComponent(component.ShapeID); vec != nil && shape != nil {
 			vec := vec.(component.Vector)
 			shape := shape.(component.Shape)
 			shape.Move(vec.Vector(), 1)
 		}
+		e.Unlock()
 	}
 
 	return nil
@@ -65,10 +69,12 @@ func (c *Client) StartProduceBoard() {
 			board.Fill(color.Gray16{0xaaaf})
 			c.Reg.RLock()
 			for _, e := range c.Reg.Entities {
+				e.RLock()
 				if c := e.GetComponent(component.ShapeID); c != nil {
 					c := c.(component.Shape)
 					c.Draw(board)
 				}
+				e.RUnlock()
 			}
 			c.Reg.RUnlock()
 			c.board <- board
