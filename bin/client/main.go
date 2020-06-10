@@ -7,6 +7,7 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/geo"
 	"github.com/niakr1s/nrg-go/src/img"
+	"github.com/niakr1s/nrg-go/src/shape"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,8 +19,11 @@ func main() {
 	client.Init()
 
 	// for test
-	circle := geo.NewCircle(500, 500, 50, img.WhiteCircle)
-	player := entity.NewEntity().WithComponent(component.DrawableID, circle)
+	circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)
+	player := entity.NewEntity().
+		WithComponent(component.ShapeID, circle).
+		WithComponent(component.VectorID, geo.NewVector(0)).
+		WithTags(component.PlayerTagID, component.UserTagID)
 	client.Reg.AddEntity(player)
 
 	if err := ebiten.RunGame(client); err != nil {

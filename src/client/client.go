@@ -40,6 +40,14 @@ func (c *Client) Init() {
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
+	for _, e := range c.Reg.Entities {
+		if vec, shape := e.GetComponent(component.VectorID), e.GetComponent(component.ShapeID); vec != nil && shape != nil {
+			vec := vec.(component.Vector)
+			shape := shape.(component.Shape)
+			shape.Move(vec.Vector(), 1)
+		}
+	}
+
 	return nil
 }
 
@@ -52,8 +60,8 @@ func (c *Client) drawBoard(screen *ebiten.Image) {
 	board, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
 	ebitenutil.DrawRect(board, 0, 0, 1000, 1000, color.Gray16{0xaaaf})
 	for _, e := range c.Reg.Entities {
-		if c := e.GetComponent(component.DrawableID); e != nil {
-			c := c.(component.Drawable)
+		if c := e.GetComponent(component.ShapeID); c != nil {
+			c := c.(component.Shape)
 			c.Draw(board)
 		}
 	}

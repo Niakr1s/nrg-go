@@ -38,3 +38,24 @@ func (e *Entity) RemoveComponent(id component.ID) *Entity {
 	delete(e.Components, id)
 	return e
 }
+
+func (e *Entity) WithTag(id component.ID) *Entity {
+	e.Components[id] = nil
+	return e
+}
+
+func (e *Entity) WithTags(ids ...component.ID) *Entity {
+	for _, id := range ids {
+		e = e.WithTag(id)
+	}
+	return e
+}
+
+func (e *Entity) HasTag(id component.ID) bool {
+	_, ok := e.Components[id]
+	return ok
+}
+
+func (e *Entity) RemoveTag(id component.ID) {
+	delete(e.Components, id)
+}

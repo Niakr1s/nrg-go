@@ -9,21 +9,28 @@ type ID int
 
 // IDs
 const (
-	DrawableID ID = iota
-	IntersectableID
-	MovableID
+	ShapeID ID = iota
+	VectorID
+
+	PlayerTagID
+	UserTagID
 )
 
 type Component interface{}
 
-type Drawable interface {
+type Shape interface {
 	Draw(board *ebiten.Image)
-}
-
-type Intersectable interface {
-	Intersects(rhs Intersectable) bool
-}
-
-type Movable interface {
+	Intersects(rhs Shape) bool
 	Move(vec geo.Vector, dist geo.Distance)
+	Center() geo.Pos
 }
+
+type Vector interface {
+	Vector() geo.Vector
+}
+
+// PlayerTag tag for a player
+type PlayerTag interface{}
+
+// UserTag is tag for user-controlled unit
+type UserTag interface{}

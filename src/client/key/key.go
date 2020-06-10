@@ -2,6 +2,7 @@ package key
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/inpututil"
@@ -114,5 +115,6 @@ func (l *Listener) loop() {
 				l.out <- Event{Key, false}
 			}
 		}
+		<-time.After(time.Millisecond * 1000 / 60)
 	}
 }
