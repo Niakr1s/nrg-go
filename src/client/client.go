@@ -9,6 +9,7 @@ import (
 	"github.com/niakr1s/nrg-go/src/config"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
+	tag "github.com/niakr1s/nrg-go/src/ecs/tags"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -138,7 +139,7 @@ func (c *Client) startKeyProcessing() {
 				c.Reg.RLock()
 				for _, e := range c.Reg.Entities {
 					e.RLock()
-					if e.HasTag(component.UserTagID) {
+					if e.HasTag(tag.UserID) {
 						e.RUnlock()
 						e.Lock()
 						e = e.RemoveComponent(component.VectorID)

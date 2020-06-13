@@ -7,6 +7,7 @@ import (
 	"github.com/niakr1s/nrg-go/src/client"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
+	tag "github.com/niakr1s/nrg-go/src/ecs/tags"
 	"github.com/niakr1s/nrg-go/src/geo"
 	"github.com/niakr1s/nrg-go/src/img"
 	"github.com/niakr1s/nrg-go/src/shape"
@@ -25,13 +26,13 @@ func main() {
 		player := entity.NewEntity().
 			WithComponent(component.ShapeID, circle).
 			WithComponent(component.VectorID, geo.NewVector(rand.Float64()*2*3.14)).
-			WithTags(component.PlayerTagID)
+			WithTags(tag.PlayerID)
 		client.Reg.AddEntity(player)
 	}
 	circle := shape.NewCircle(500, 500, 50, img.WhiteCircle)
 	player := entity.NewEntity().
 		WithComponent(component.ShapeID, circle).
-		WithTags(component.PlayerTagID, component.UserTagID)
+		WithTags(tag.PlayerID, tag.UserID)
 	client.Reg.AddEntity(player)
 
 	client.StartProduceBoard()

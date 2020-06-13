@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/niakr1s/nrg-go/src/ecs/component"
+	tag "github.com/niakr1s/nrg-go/src/ecs/tags"
 )
 
 type EntityID int
@@ -14,11 +15,12 @@ type Entity struct {
 	sync.RWMutex
 
 	Components map[component.ID]component.Component
+	Tags       map[tag.ID]struct{}
 }
 
 // NewEntity constructs Entity with ID=0 and empty Components
 func NewEntity() *Entity {
-	return &Entity{Components: make(map[component.ID]component.Component)}
+	return &Entity{Components: make(map[component.ID]component.Component), Tags: make(map[tag.ID]struct{})}
 }
 
 func (e *Entity) WithID(id EntityID) *Entity {
@@ -44,23 +46,23 @@ func (e *Entity) RemoveComponent(id component.ID) *Entity {
 	return e
 }
 
-func (e *Entity) WithTag(id component.ID) *Entity {
-	e.Components[id] = nil
+func (e *Entity) WithTag(id tag.ID) *Entity {
+	e.Tags[id] = struct{}{}
 	return e
 }
 
-func (e *Entity) WithTags(ids ...component.ID) *Entity {
+func (e *Entity) WithTags(ids ...tag.ID) *Entity {
 	for _, id := range ids {
 		e = e.WithTag(id)
 	}
 	return e
 }
 
-func (e *Entity) HasTag(id component.ID) bool {
-	_, ok := e.Components[id]
+func (e *Entity) HasTag(id tag.ID) bool {
+	_, ok := e.Tags[id]
 	return ok
 }
 
-func (e *Entity) RemoveTag(id component.ID) {
-	delete(e.Components, id)
+func (e *Entity) RemoveTag(id tag.ID) {
+	delete(e.Tags, id)
 }

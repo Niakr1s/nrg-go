@@ -11,9 +11,6 @@ type ID int
 const (
 	ShapeID ID = iota
 	VectorID
-
-	PlayerTagID
-	UserTagID
 )
 
 type Component interface{}
@@ -28,9 +25,3 @@ type Shape interface {
 type Vector interface {
 	Vector() geo.Vector
 }
-
-// PlayerTag tag for a player
-type PlayerTag interface{}
-
-// UserTag is tag for user-controlled unit
-type UserTag interface{}
