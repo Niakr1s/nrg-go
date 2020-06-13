@@ -36,7 +36,7 @@ func (c *Client) Init() {
 
 	c.systems = append(c.systems,
 		system.NewKeyBoard(c.Reg),
-		system.NewMove(c.Reg, 1000, 1000),
+		system.NewMove(c.Reg, config.BoardWidth, config.BoardHeight),
 	)
 }
 
@@ -63,7 +63,7 @@ func (c *Client) Draw(screen *ebiten.Image) {
 func (c *Client) startProduceBoard() {
 	go func() {
 		for {
-			board, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
+			board, _ := ebiten.NewImage(config.BoardWidth, config.BoardHeight, ebiten.FilterDefault)
 			board.Fill(color.Gray16{0xaaaf})
 			c.Reg.RLock()
 			for _, e := range c.Reg.Entities {
