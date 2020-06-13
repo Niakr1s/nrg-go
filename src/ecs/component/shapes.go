@@ -14,7 +14,7 @@ type Shape interface {
 }
 
 type Bound struct {
-	TopLeft, BotRight *Pos
+	TopLeft, BotRight Pos
 }
 
 func NewBound(center Pos, w, h float64) Bound {

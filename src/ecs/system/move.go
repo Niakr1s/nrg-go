@@ -27,17 +27,17 @@ func (m *Move) moveOneEntity(e *entity.Entity) {
 	e.Lock()
 	defer e.Unlock()
 	if cs := e.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID); cs != nil {
-		vec := cs[0].(*component.Vector)
-		pos := cs[1].(*component.Pos)
-		speed := cs[2].(*component.Speed)
+		vec := cs[0].(component.Vector)
+		pos := cs[1].(component.Pos)
+		speed := cs[2].(component.Speed)
 		shape := cs[3].(component.Shape)
-		bound := shape.Bound(*pos)
+		bound := shape.Bound(pos)
 		if bound.TopLeft.X < 1 && vec.IsLeft() ||
 			bound.BotRight.X > m.boardW-1 && vec.IsRight() ||
 			bound.TopLeft.Y < 1 && vec.IsTop() ||
 			bound.BotRight.Y > m.boardH-1 && vec.IsBot() {
 			return
 		}
-		pos.Move(*vec, *speed)
+		e.SetComponents(pos.Move(vec, speed))
 	}
 }

@@ -70,8 +70,8 @@ func (c *Client) startProduceBoard() {
 				e.RLock()
 				if cs := e.GetComponents(component.ShapeID, component.PosID); cs != nil {
 					shape := cs[0].(component.Shape)
-					pos := cs[1].(*component.Pos)
-					shape.Draw(board, *pos)
+					pos := cs[1].(component.Pos)
+					shape.Draw(board, pos)
 				}
 				e.RUnlock()
 			}

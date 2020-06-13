@@ -33,7 +33,7 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 					if e.HasTags(tag.UserID) {
 						e = e.RemoveComponents(component.VectorID)
 						if changedVec != nil {
-							e = e.SetComponents(changedVec)
+							e = e.SetComponents(*changedVec)
 						}
 					}
 					e.Unlock()
