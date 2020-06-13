@@ -23,12 +23,12 @@ func NewEntity() *Entity {
 	return &Entity{Components: make(map[component.ID]component.Component), Tags: make(map[tag.ID]struct{})}
 }
 
-func (e *Entity) WithID(id EntityID) *Entity {
+func (e *Entity) SetID(id EntityID) *Entity {
 	e.ID = id
 	return e
 }
 
-func (e *Entity) WithComponent(c component.Component) *Entity {
+func (e *Entity) SetComponent(c component.Component) *Entity {
 	e.Components[c.ID()] = c
 	return e
 }
@@ -46,14 +46,14 @@ func (e *Entity) RemoveComponent(id component.ID) *Entity {
 	return e
 }
 
-func (e *Entity) WithTag(id tag.ID) *Entity {
+func (e *Entity) SetTag(id tag.ID) *Entity {
 	e.Tags[id] = struct{}{}
 	return e
 }
 
-func (e *Entity) WithTags(ids ...tag.ID) *Entity {
+func (e *Entity) SetTags(ids ...tag.ID) *Entity {
 	for _, id := range ids {
-		e = e.WithTag(id)
+		e = e.SetTag(id)
 	}
 	return e
 }
