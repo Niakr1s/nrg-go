@@ -102,24 +102,6 @@ func (c *Client) drawBoard(screen *ebiten.Image) {
 	screen.DrawImage(board, op)
 }
 
-func min(first int, other ...int) int {
-	for _, i := range other {
-		if i < first {
-			first = i
-		}
-	}
-	return first
-}
-
-func max(first int, other ...int) int {
-	for _, i := range other {
-		if i > first {
-			first = i
-		}
-	}
-	return first
-}
-
 // Layout ...
 func (c *Client) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return config.ScreenWidth, config.ScreenHeight
