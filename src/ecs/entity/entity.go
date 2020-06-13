@@ -36,6 +36,7 @@ func (e *Entity) SetComponents(cs ...component.Component) *Entity {
 }
 
 // GetComponents gets all components, return nil if any is missing
+// garantees len(result) == len(ids) on succes
 func (e *Entity) GetComponents(ids ...component.ID) component.Components {
 	res := component.Components{}
 	for _, id := range ids {
