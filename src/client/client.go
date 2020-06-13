@@ -5,28 +5,24 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten"
-	"github.com/niakr1s/nrg-go/src/client/key"
 	"github.com/niakr1s/nrg-go/src/config"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
-	tag "github.com/niakr1s/nrg-go/src/ecs/tags"
-	log "github.com/sirupsen/logrus"
+	"github.com/niakr1s/nrg-go/src/ecs/system"
 )
 
 // Client ...
 type Client struct {
-	keyCh key.ListenResult
-
 	Reg *registry.Registry
 
 	board chan *ebiten.Image
 
-	nextPollKey chan struct{}
+	systems []system.System
 }
 
 // New ...
 func New() *Client {
-	return &Client{Reg: registry.NewRegistry(), board: make(chan *ebiten.Image), nextPollKey: make(chan struct{})}
+	return &Client{Reg: registry.NewRegistry(), board: make(chan *ebiten.Image), systems: make([]system.System, 0)}
 }
 
 // Init ...
@@ -35,13 +31,15 @@ func (c *Client) Init() {
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetRunnableOnUnfocused(true)
 
-	c.keyCh = key.NewListener().StartPollKeys(c.nextPollKey)
-	c.startKeyProcessing()
+	c.systems = append(c.systems, system.NewKeyBoard(c.Reg))
 }
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
-	c.nextPollKey <- struct{}{}
+	for _, s := range c.systems {
+		s.Step()
+	}
+
 	c.Reg.RLock()
 	defer c.Reg.RUnlock()
 	for _, e := range c.Reg.Entities {
@@ -125,34 +123,4 @@ func max(first int, other ...int) int {
 // Layout ...
 func (c *Client) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
 	return config.ScreenWidth, config.ScreenHeight
-}
-
-func (c *Client) startKeyProcessing() {
-	go func() {
-		for {
-			select {
-			case pressed := <-c.keyCh.ExitCh:
-				log.Tracef("exit key pressed, %v", pressed)
-			case pressed := <-c.keyCh.FireCh:
-				log.Tracef("fire key pressed, %v", pressed)
-			case changedVec := <-c.keyCh.VectorCh:
-				c.Reg.RLock()
-				for _, e := range c.Reg.Entities {
-					e.RLock()
-					if e.HasTag(tag.UserID) {
-						e.RUnlock()
-						e.Lock()
-						e = e.RemoveComponent(component.VectorID)
-						if changedVec != nil {
-							e = e.WithComponent(component.VectorID, *changedVec)
-						}
-						e.Unlock()
-						e.RLock()
-					}
-					e.RUnlock()
-				}
-				c.Reg.RUnlock()
-			}
-		}
-	}()
 }
