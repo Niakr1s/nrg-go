@@ -31,13 +31,20 @@ func (m *Move) moveOneEntity(e *entity.Entity) {
 		pos := cs[1].(component.Pos)
 		speed := cs[2].(component.Speed)
 		shape := cs[3].(component.Shape)
-		bound := shape.Bound(pos)
-		if bound.TopLeft.X < 1 && vec.IsLeft() ||
-			bound.BotRight.X > m.boardW-1 && vec.IsRight() ||
-			bound.TopLeft.Y < 1 && vec.IsTop() ||
-			bound.BotRight.Y > m.boardH-1 && vec.IsBot() {
-			return
+		nextPos := pos.Move(vec, speed)
+		bound := shape.Bound(nextPos)
+		if diff := 0 - bound.TopLeft.X; diff > 0 {
+			nextPos.X += diff
 		}
-		e.SetComponents(pos.Move(vec, speed))
+		if diff := 0 - bound.TopLeft.Y; diff > 0 {
+			nextPos.Y += diff
+		}
+		if diff := m.boardW - bound.BotRight.X; diff < 0 {
+			nextPos.X += diff
+		}
+		if diff := m.boardH - bound.BotRight.Y; diff < 0 {
+			nextPos.Y += diff
+		}
+		e.SetComponents(nextPos)
 	}
 }
