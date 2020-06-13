@@ -13,6 +13,7 @@ type Shape interface {
 	Draw(board *ebiten.Image, pos Pos)
 	Bound(center Pos) Bound
 	Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool
+	CorrectedPos(selfCenter, rhsCenter Pos, selfSpeed, rhsSpeed Speed, rhs Shape) (Pos, Pos)
 }
 
 type Bound struct {
@@ -64,12 +65,30 @@ func (c *Circle) Bound(center Pos) Bound {
 func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 	switch rhs := rhs.(type) {
 	case *Circle:
-		dist := math.Sqrt(math.Pow(selfCenter.X-rhsCenter.X, 2) +
-			math.Pow(selfCenter.Y-rhsCenter.Y, 2))
+		dist := distance(selfCenter, rhsCenter)
 		return dist <= c.R+rhs.R
 
 	default:
 		log.Errorf("Circle.Intersects: got unknown rhs: %v", rhs)
 		return false
 	}
+}
+
+func (c *Circle) CorrectedPos(selfCenter, rhsCenter Pos, selfSpeed, rhsSpeed Speed, rhs Shape) (Pos, Pos) {
+	if c.Intersects(selfCenter, rhsCenter, rhs) {
+		// switch rhs := rhs.(type) {
+		// case *Circle:
+		// 	dist := distance(selfCenter, rhsCenter)
+		// 	diff := c.R + rhs.R - dist
+
+		// default:
+		// 	log.Errorf("Circle.CorrectedPos: got unknown rhs: %v", rhs)
+		// }
+	}
+
+	return selfCenter, rhsCenter
+}
+
+func distance(lhs, rhs Pos) float64 {
+	return math.Sqrt(math.Pow(lhs.X-rhs.X, 2) + math.Pow(lhs.Y-rhs.Y, 2))
 }

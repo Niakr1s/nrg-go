@@ -10,6 +10,12 @@ func NewVector(vec float64) Vector {
 	return Vector(vec)
 }
 
+func NewVectorFromPos(pos1, pos2 Pos) Vector {
+	dx, dy := pos2.X-pos1.X, pos2.Y-pos1.Y
+	a := math.Atan2(dy, dx)
+	return Vector(a)
+}
+
 func (v Vector) ID() ID {
 	return VectorID
 }

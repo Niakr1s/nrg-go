@@ -21,6 +21,34 @@ func (m *Move) Step() {
 	for _, e := range m.reg.Entities {
 		m.moveOneEntity(e)
 	}
+	m.correctPos()
+}
+func (m *Move) correctPos() {
+	for i := 0; i < len(m.reg.Entities); i++ {
+		lhs := m.reg.Entities[i]
+		lcs := lhs.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID)
+		if lcs == nil {
+			continue
+		}
+		// lhsVec := lcs[0].(component.Vector)
+		lhsPos := lcs[1].(component.Pos)
+		// lhsSpeed := lcs[2].(component.Speed)
+		lhsShape := lcs[3].(component.Shape)
+		for j := i + 1; j < len(m.reg.Entities); j++ {
+			rhs := m.reg.Entities[j]
+			rcs := rhs.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID)
+			if rcs == nil {
+				continue
+			}
+			// rhsVec := rcs[0].(component.Vector)
+			rhsPos := rcs[1].(component.Pos)
+			// rhsSpeed := rcs[2].(component.Speed)
+			rhsShape := rcs[3].(component.Shape)
+			if !lhsShape.Intersects(lhsPos, rhsPos, rhsShape) {
+				continue
+			}
+		}
+	}
 }
 
 func (m *Move) moveOneEntity(e *entity.Entity) {
