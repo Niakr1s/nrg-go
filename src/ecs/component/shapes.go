@@ -1,6 +1,8 @@
 package component
 
 import (
+	"math"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/img"
 	log "github.com/sirupsen/logrus"
@@ -9,8 +11,8 @@ import (
 type Shape interface {
 	Component
 	Draw(board *ebiten.Image, pos Pos)
-
 	Bound(center Pos) Bound
+	Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool
 }
 
 type Bound struct {
@@ -57,4 +59,17 @@ func (c *Circle) Draw(board *ebiten.Image, pos Pos) {
 
 func (c *Circle) Bound(center Pos) Bound {
 	return NewBound(center, c.R, c.R)
+}
+
+func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
+	switch rhs := rhs.(type) {
+	case *Circle:
+		dist := math.Sqrt(math.Pow(selfCenter.X-rhsCenter.X, 2) +
+			math.Pow(selfCenter.Y-rhsCenter.Y, 2))
+		return dist <= c.R+rhs.R
+
+	default:
+		log.Errorf("Circle.Intersects: got unknown rhs: %v", rhs)
+		return false
+	}
 }
