@@ -26,24 +26,26 @@ func (m *Move) Step() {
 func (m *Move) moveOneEntity(e *entity.Entity) {
 	e.Lock()
 	defer e.Unlock()
-	if cs := e.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID); cs != nil {
-		vec := cs[0].(component.Vector)
-		pos := cs[1].(component.Pos)
-		speed := cs[2].(component.Speed)
-		shape := cs[3].(component.Shape)
-		// no speed - no move
-		if speed <= 0 {
-			e.RemoveComponents(component.SpeedID)
-			return
-		}
-		nextPos := pos.Move(vec, speed)
-		bound := shape.Bound(nextPos)
-		nextPos, _ = correctPos(nextPos, bound, m.boardW, m.boardH)
-		e.SetComponents(nextPos)
+	cs := e.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID)
+	if cs == nil {
+		return
 	}
+	vec := cs[0].(component.Vector)
+	pos := cs[1].(component.Pos)
+	speed := cs[2].(component.Speed)
+	shape := cs[3].(component.Shape)
+	// no speed - no move
+	if speed <= 0 {
+		e.RemoveComponents(component.SpeedID)
+		return
+	}
+	nextPos := pos.Move(vec, speed)
+	bound := shape.Bound(nextPos)
+	nextPos, _ = correctPosBoard(nextPos, bound, m.boardW, m.boardH)
+	e.SetComponents(nextPos)
 }
 
-func correctPos(pos component.Pos, bound component.Bound, boardW, boardH float64) (component.Pos, bool) {
+func correctPosBoard(pos component.Pos, bound component.Bound, boardW, boardH float64) (component.Pos, bool) {
 	changed := false
 	if diff := 0 - bound.TopLeft.X; diff > 0 {
 		pos.X += diff
