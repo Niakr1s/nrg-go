@@ -33,26 +33,15 @@ func (c *Client) Init() {
 
 	c.startProduceBoard()
 
-	c.systems = append(c.systems, system.NewKeyBoard(c.Reg))
+	c.systems = append(c.systems,
+		system.NewKeyBoard(c.Reg),
+		system.NewMove(c.Reg))
 }
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
 	for _, s := range c.systems {
 		s.Step()
-	}
-
-	c.Reg.RLock()
-	defer c.Reg.RUnlock()
-	for _, e := range c.Reg.Entities {
-		e.Lock()
-		if cs := e.GetComponents(component.VectorID, component.PosID, component.SpeedID); cs != nil {
-			vec := cs[0].(*component.Vector)
-			pos := cs[1].(*component.Pos)
-			speed := cs[2].(*component.Speed)
-			pos.Move(*vec, *speed)
-		}
-		e.Unlock()
 	}
 
 	return nil
