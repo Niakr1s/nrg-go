@@ -44,7 +44,7 @@ func Test_correctPos(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			bound := component.NewBound(tt.pos, tt.w, tt.h)
-			got := correctPos(tt.pos, bound, boardW, boardH)
+			got, _ := correctPos(tt.pos, bound, boardW, boardH)
 			assert.Equal(t, tt.want, got)
 		})
 	}

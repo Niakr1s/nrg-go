@@ -31,25 +31,35 @@ func (m *Move) moveOneEntity(e *entity.Entity) {
 		pos := cs[1].(component.Pos)
 		speed := cs[2].(component.Speed)
 		shape := cs[3].(component.Shape)
+		// no speed - no move
+		if speed <= 0 {
+			e.RemoveComponents(component.SpeedID)
+			return
+		}
 		nextPos := pos.Move(vec, speed)
 		bound := shape.Bound(nextPos)
-		nextPos = correctPos(nextPos, bound, m.boardW, m.boardH)
+		nextPos, _ = correctPos(nextPos, bound, m.boardW, m.boardH)
 		e.SetComponents(nextPos)
 	}
 }
 
-func correctPos(pos component.Pos, bound component.Bound, boardW, boardH float64) component.Pos {
+func correctPos(pos component.Pos, bound component.Bound, boardW, boardH float64) (component.Pos, bool) {
+	changed := false
 	if diff := 0 - bound.TopLeft.X; diff > 0 {
 		pos.X += diff
+		changed = true
 	}
 	if diff := 0 - bound.TopLeft.Y; diff > 0 {
+		changed = true
 		pos.Y += diff
 	}
 	if diff := boardW - bound.BotRight.X; diff < 0 {
+		changed = true
 		pos.X += diff
 	}
 	if diff := boardH - bound.BotRight.Y; diff < 0 {
+		changed = true
 		pos.Y += diff
 	}
-	return pos
+	return pos, changed
 }
