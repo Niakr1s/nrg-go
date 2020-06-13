@@ -33,18 +33,23 @@ func (m *Move) moveOneEntity(e *entity.Entity) {
 		shape := cs[3].(component.Shape)
 		nextPos := pos.Move(vec, speed)
 		bound := shape.Bound(nextPos)
-		if diff := 0 - bound.TopLeft.X; diff > 0 {
-			nextPos.X += diff
-		}
-		if diff := 0 - bound.TopLeft.Y; diff > 0 {
-			nextPos.Y += diff
-		}
-		if diff := m.boardW - bound.BotRight.X; diff < 0 {
-			nextPos.X += diff
-		}
-		if diff := m.boardH - bound.BotRight.Y; diff < 0 {
-			nextPos.Y += diff
-		}
+		nextPos = correctPos(nextPos, bound, m.boardW, m.boardH)
 		e.SetComponents(nextPos)
 	}
+}
+
+func correctPos(pos component.Pos, bound component.Bound, boardW, boardH float64) component.Pos {
+	if diff := 0 - bound.TopLeft.X; diff > 0 {
+		pos.X += diff
+	}
+	if diff := 0 - bound.TopLeft.Y; diff > 0 {
+		pos.Y += diff
+	}
+	if diff := boardW - bound.BotRight.X; diff < 0 {
+		pos.X += diff
+	}
+	if diff := boardH - bound.BotRight.Y; diff < 0 {
+		pos.Y += diff
+	}
+	return pos
 }
