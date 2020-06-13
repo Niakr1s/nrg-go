@@ -26,28 +26,36 @@ func (m *Move) Step() {
 func (m *Move) correctPos() {
 	for i := 0; i < len(m.reg.Entities); i++ {
 		lhs := m.reg.Entities[i]
-		lcs := lhs.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID)
+		lhs.Lock()
+		lcs := lhs.GetComponents(component.PosID, component.SpeedID, component.ShapeID)
 		if lcs == nil {
+			lhs.Unlock()
 			continue
 		}
-		// lhsVec := lcs[0].(component.Vector)
-		lhsPos := lcs[1].(component.Pos)
-		// lhsSpeed := lcs[2].(component.Speed)
-		lhsShape := lcs[3].(component.Shape)
+		lhsPos := lcs[0].(component.Pos)
+		lhsSpeed := lcs[1].(component.Speed)
+		lhsShape := lcs[2].(component.Shape)
 		for j := i + 1; j < len(m.reg.Entities); j++ {
 			rhs := m.reg.Entities[j]
-			rcs := rhs.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID)
+			rhs.Lock()
+			rcs := rhs.GetComponents(component.PosID, component.SpeedID, component.ShapeID)
 			if rcs == nil {
+				rhs.Unlock()
 				continue
 			}
-			// rhsVec := rcs[0].(component.Vector)
-			rhsPos := rcs[1].(component.Pos)
-			// rhsSpeed := rcs[2].(component.Speed)
-			rhsShape := rcs[3].(component.Shape)
+			rhsPos := rcs[0].(component.Pos)
+			rhsSpeed := rcs[1].(component.Speed)
+			rhsShape := rcs[2].(component.Shape)
 			if !lhsShape.Intersects(lhsPos, rhsPos, rhsShape) {
+				rhs.Unlock()
 				continue
 			}
+			lhsPos, rhsPos = lhsShape.CorrectedPos(lhsPos, rhsPos, lhsSpeed, rhsSpeed, rhsShape)
+			lhs.SetComponents(lhsPos)
+			rhs.SetComponents(rhsPos)
+			rhs.Unlock()
 		}
+		lhs.Unlock()
 	}
 }
 

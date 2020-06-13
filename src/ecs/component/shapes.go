@@ -75,15 +75,19 @@ func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 }
 
 func (c *Circle) CorrectedPos(selfCenter, rhsCenter Pos, selfSpeed, rhsSpeed Speed, rhs Shape) (Pos, Pos) {
+	sumSpeed := selfSpeed + rhsSpeed
 	if c.Intersects(selfCenter, rhsCenter, rhs) {
-		// switch rhs := rhs.(type) {
-		// case *Circle:
-		// 	dist := distance(selfCenter, rhsCenter)
-		// 	diff := c.R + rhs.R - dist
+		switch rhs := rhs.(type) {
+		case *Circle:
+			dist := distance(selfCenter, rhsCenter)
+			diff := (c.R+rhs.R)/2 - dist
+			selfVec, rhsVec := NewVectorFromPos(rhsCenter, selfCenter), NewVectorFromPos(selfCenter, rhsCenter)
+			selfDist, rhsDist := diff*float64(selfSpeed)/float64(sumSpeed), diff*float64(rhsSpeed)/float64(sumSpeed)
+			selfCenter, rhsCenter = selfCenter.Move(selfVec, Speed(selfDist)), rhsCenter.Move(rhsVec, Speed(rhsDist))
 
-		// default:
-		// 	log.Errorf("Circle.CorrectedPos: got unknown rhs: %v", rhs)
-		// }
+		default:
+			log.Errorf("Circle.CorrectedPos: got unknown rhs: %v", rhs)
+		}
 	}
 
 	return selfCenter, rhsCenter
