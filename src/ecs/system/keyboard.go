@@ -29,18 +29,14 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 			case changedVec := <-res.results.VectorCh:
 				res.reg.RLock()
 				for _, e := range res.reg.Entities {
-					e.RLock()
+					e.Lock()
 					if e.HasTags(tag.UserID) {
-						e.RUnlock()
-						e.Lock()
 						e = e.RemoveComponents(component.VectorID)
 						if changedVec != nil {
 							e = e.SetComponents(changedVec)
 						}
-						e.Unlock()
-						e.RLock()
 					}
-					e.RUnlock()
+					e.Unlock()
 				}
 				res.reg.RUnlock()
 			}
