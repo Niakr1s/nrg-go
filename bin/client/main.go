@@ -26,8 +26,18 @@ func main() {
 			SetTags(tag.PlayerID)
 		client.Reg.AddEntity(player)
 	}
+
+	for i := 0; i < 10; i++ {
+		circle := component.NewCircle(50, img.RedCircle)
+		player := entity.NewEntity().
+			SetComponents(circle,
+				component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))).
+			SetTags(tag.PlayerID, tag.GroundID)
+		client.Reg.AddEntity(player)
+	}
+
 	player := entity.NewEntity().
-		SetComponents(component.NewCircle(50, img.WhiteCircle), component.NewPos(500, 500), component.NewSpeed(10)).
+		SetComponents(component.NewCircle(50, img.BlueCircle), component.NewPos(500, 500), component.NewSpeed(10)).
 		SetTags(tag.UserID, tag.PlayerID)
 
 	client.Reg.AddEntity(player)

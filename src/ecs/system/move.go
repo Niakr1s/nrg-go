@@ -4,6 +4,7 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
+	"github.com/niakr1s/nrg-go/src/ecs/tag"
 )
 
 type Move struct {
@@ -28,14 +29,13 @@ func (m *Move) correctPos() {
 	for i := 0; i < len(m.reg.Entities); i++ {
 		lhs := m.reg.Entities[i]
 		lhs.Lock()
-		lcs := lhs.GetComponents(component.PosID, component.SpeedID, component.ShapeID)
+		lcs := lhs.GetComponents(component.PosID, component.ShapeID)
 		if lcs == nil {
 			lhs.Unlock()
 			continue
 		}
 		lhsPos := lcs[0].(component.Pos)
-		lhsSpeed := lcs[1].(component.Speed)
-		lhsShape := lcs[2].(component.Shape)
+		lhsShape := lcs[1].(component.Shape)
 		for j := i + 1; j < len(m.reg.Entities); j++ {
 			rhs := m.reg.Entities[j]
 			rhs.Lock()
@@ -45,13 +45,12 @@ func (m *Move) correctPos() {
 				continue
 			}
 			rhsPos := rcs[0].(component.Pos)
-			rhsSpeed := rcs[1].(component.Speed)
-			rhsShape := rcs[2].(component.Shape)
+			rhsShape := rcs[1].(component.Shape)
 			if !lhsShape.Intersects(lhsPos, rhsPos, rhsShape) {
 				rhs.Unlock()
 				continue
 			}
-			lhsPos, rhsPos = lhsShape.CorrectedPos(lhsPos, rhsPos, lhsSpeed, rhsSpeed, rhsShape)
+			lhsPos, rhsPos = lhsShape.CorrectedPos(lhsPos, rhsPos, lhs.HasTags(tag.GroundID), rhs.HasTags(tag.GroundID), rhsShape)
 			lhs.SetComponents(lhsPos)
 			rhs.SetComponents(rhsPos)
 			rhs.Unlock()
