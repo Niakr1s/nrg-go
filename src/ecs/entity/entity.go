@@ -28,8 +28,8 @@ func (e *Entity) WithID(id EntityID) *Entity {
 	return e
 }
 
-func (e *Entity) WithComponent(id component.ID, c component.Component) *Entity {
-	e.Components[id] = c
+func (e *Entity) WithComponent(c component.Component) *Entity {
+	e.Components[c.ID()] = c
 	return e
 }
 

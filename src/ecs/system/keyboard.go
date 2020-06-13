@@ -35,7 +35,7 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 						e.Lock()
 						e = e.RemoveComponent(component.VectorID)
 						if changedVec != nil {
-							e = e.WithComponent(component.VectorID, changedVec)
+							e = e.WithComponent(changedVec)
 						}
 						e.Unlock()
 						e.RLock()
