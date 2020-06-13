@@ -30,12 +30,12 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 				res.reg.RLock()
 				for _, e := range res.reg.Entities {
 					e.RLock()
-					if e.HasTag(tag.UserID) {
+					if e.HasTags(tag.UserID) {
 						e.RUnlock()
 						e.Lock()
-						e = e.RemoveComponent(component.VectorID)
+						e = e.RemoveComponents(component.VectorID)
 						if changedVec != nil {
-							e = e.SetComponent(changedVec)
+							e = e.SetComponents(changedVec)
 						}
 						e.Unlock()
 						e.RLock()

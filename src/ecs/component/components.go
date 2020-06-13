@@ -22,3 +22,5 @@ type Shape interface {
 	Component
 	Draw(board *ebiten.Image, pos Pos)
 }
+
+type Components []Component

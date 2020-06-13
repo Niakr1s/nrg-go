@@ -28,41 +28,52 @@ func (e *Entity) SetID(id EntityID) *Entity {
 	return e
 }
 
-func (e *Entity) SetComponent(c component.Component) *Entity {
-	e.Components[c.ID()] = c
-	return e
-}
-
-// GetComponent gets component, can return nil
-func (e *Entity) GetComponent(id component.ID) component.Component {
-	if c, ok := e.Components[id]; ok {
-		return c
+func (e *Entity) SetComponents(cs ...component.Component) *Entity {
+	for _, c := range cs {
+		e.Components[c.ID()] = c
 	}
-	return nil
-}
-
-func (e *Entity) RemoveComponent(id component.ID) *Entity {
-	delete(e.Components, id)
 	return e
 }
 
-func (e *Entity) SetTag(id tag.ID) *Entity {
-	e.Tags[id] = struct{}{}
+// GetComponents gets all components, return nil if any is missing
+func (e *Entity) GetComponents(ids ...component.ID) component.Components {
+	res := component.Components{}
+	for _, id := range ids {
+		c, ok := e.Components[id]
+		if !ok {
+			return nil
+		}
+		res = append(res, c)
+	}
+	return res
+}
+
+func (e *Entity) RemoveComponents(ids ...component.ID) *Entity {
+	for _, id := range ids {
+		delete(e.Components, id)
+	}
 	return e
 }
 
 func (e *Entity) SetTags(ids ...tag.ID) *Entity {
 	for _, id := range ids {
-		e = e.SetTag(id)
+		e.Tags[id] = struct{}{}
 	}
 	return e
 }
 
-func (e *Entity) HasTag(id tag.ID) bool {
-	_, ok := e.Tags[id]
-	return ok
+// HasTags returns false if any is missing
+func (e *Entity) HasTags(ids ...tag.ID) bool {
+	for _, id := range ids {
+		if _, ok := e.Tags[id]; !ok {
+			return false
+		}
+	}
+	return true
 }
 
-func (e *Entity) RemoveTag(id tag.ID) {
-	delete(e.Tags, id)
+func (e *Entity) RemoveTags(ids ...tag.ID) {
+	for _, id := range ids {
+		delete(e.Tags, id)
+	}
 }

@@ -22,19 +22,14 @@ func main() {
 	for i := 0; i < 100; i++ {
 		circle := component.NewCircle(50, img.WhiteCircle)
 		player := entity.NewEntity().
-			SetComponent(circle).
-			SetComponent(component.NewPos(500, 500)).
-			SetComponent(component.NewVector(rand.Float64() * 2 * 3.14)).
-			SetComponent(component.NewSpeed(1)).
+			SetComponents(circle, component.NewPos(500, 500), component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(1)).
 			SetTags(tag.PlayerID)
 		client.Reg.AddEntity(player)
 	}
-	circle := component.NewCircle(50, img.WhiteCircle)
 	player := entity.NewEntity().
-		SetComponent(circle).
-		SetComponent(component.NewPos(500, 500)).
-		SetComponent(component.NewSpeed(1)).
-		SetTags(tag.PlayerID, tag.UserID)
+		SetComponents(component.NewCircle(50, img.WhiteCircle), component.NewPos(500, 500), component.NewSpeed(1)).
+		SetTags(tag.UserID)
+
 	client.Reg.AddEntity(player)
 
 	if err := ebiten.RunGame(client); err != nil {
