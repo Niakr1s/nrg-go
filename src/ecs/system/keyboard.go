@@ -7,8 +7,7 @@ import (
 	"github.com/hajimehoshi/ebiten/inpututil"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
-	tag "github.com/niakr1s/nrg-go/src/ecs/tags"
-	"github.com/niakr1s/nrg-go/src/geo"
+	"github.com/niakr1s/nrg-go/src/ecs/tag"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -36,7 +35,7 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 						e.Lock()
 						e = e.RemoveComponent(component.VectorID)
 						if changedVec != nil {
-							e = e.WithComponent(component.VectorID, *changedVec)
+							e = e.WithComponent(component.VectorID, changedVec)
 						}
 						e.Unlock()
 						e.RLock()
@@ -109,11 +108,11 @@ const (
 
 type ListenResult struct {
 	FireCh   chan bool
-	VectorCh chan *geo.Vector
+	VectorCh chan *component.Vector
 }
 
 func NewListenResult() ListenResult {
-	return ListenResult{FireCh: make(chan bool), VectorCh: make(chan *geo.Vector)}
+	return ListenResult{FireCh: make(chan bool), VectorCh: make(chan *component.Vector)}
 }
 
 // Bindings ...
@@ -146,45 +145,45 @@ func newKeyStates() keyStates {
 }
 
 // getVector is dumbest function ever
-func getVector(up, down, left, right bool) *geo.Vector {
+func getVector(up, down, left, right bool) *component.Vector {
 	// up
 	if left && up && right && !down || up && !left && !right && !down {
-		res := geo.Vector(1.5 * math.Pi)
+		res := component.Vector(1.5 * math.Pi)
 		return &res
 	}
 	// down
 	if left && down && right && !up || down && !left && !right && !up {
-		res := geo.Vector(0.5 * math.Pi)
+		res := component.Vector(0.5 * math.Pi)
 		return &res
 	}
 	// left
 	if left && up && down && !right || left && !up && !down && !right {
-		res := geo.Vector(math.Pi)
+		res := component.Vector(math.Pi)
 		return &res
 	}
 	// right
 	if right && up && down && !left || right && !left && !up && !down {
-		res := geo.Vector(0)
+		res := component.Vector(0)
 		return &res
 	}
 	// left up
 	if left && up && !right && !down {
-		res := geo.Vector(1.25 * math.Pi)
+		res := component.Vector(1.25 * math.Pi)
 		return &res
 	}
 	// right up
 	if right && up && !left && !down {
-		res := geo.Vector(1.75 * math.Pi)
+		res := component.Vector(1.75 * math.Pi)
 		return &res
 	}
 	// right down
 	if right && down && !left && !up {
-		res := geo.Vector(0.25 * math.Pi)
+		res := component.Vector(0.25 * math.Pi)
 		return &res
 	}
 	// left down
 	if left && down && !right && !up {
-		res := geo.Vector(0.75 * math.Pi)
+		res := component.Vector(0.75 * math.Pi)
 		return &res
 	}
 	if up && down && left && right || !up && !down && !left && !right {

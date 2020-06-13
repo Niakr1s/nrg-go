@@ -4,7 +4,7 @@ import (
 	"sync"
 
 	"github.com/niakr1s/nrg-go/src/ecs/component"
-	tag "github.com/niakr1s/nrg-go/src/ecs/tags"
+	"github.com/niakr1s/nrg-go/src/ecs/tag"
 )
 
 type EntityID int

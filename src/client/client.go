@@ -46,10 +46,11 @@ func (c *Client) Update(screen *ebiten.Image) error {
 	defer c.Reg.RUnlock()
 	for _, e := range c.Reg.Entities {
 		e.Lock()
-		if vec, shape := e.GetComponent(component.VectorID), e.GetComponent(component.ShapeID); vec != nil && shape != nil {
-			vec := vec.(component.Vector)
-			shape := shape.(component.Shape)
-			shape.Move(vec.Vector(), 1)
+		if vec, pos, speed := e.GetComponent(component.VectorID), e.GetComponent(component.PosID), e.GetComponent(component.SpeedID); vec != nil && pos != nil && speed != nil {
+			vec := vec.(*component.Vector)
+			pos := pos.(*component.Pos)
+			speed := speed.(*component.Speed)
+			pos.Move(*vec, *speed)
 		}
 		e.Unlock()
 	}
@@ -70,9 +71,10 @@ func (c *Client) startProduceBoard() {
 			c.Reg.RLock()
 			for _, e := range c.Reg.Entities {
 				e.RLock()
-				if c := e.GetComponent(component.ShapeID); c != nil {
-					c := c.(component.Shape)
-					c.Draw(board)
+				if c, pos := e.GetComponent(component.ShapeID), e.GetComponent(component.PosID); c != nil && pos != nil {
+					shape := c.(component.Shape)
+					pos := pos.(*component.Pos)
+					shape.Draw(board, *pos)
 				}
 				e.RUnlock()
 			}

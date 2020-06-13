@@ -2,7 +2,6 @@ package component
 
 import (
 	"github.com/hajimehoshi/ebiten"
-	"github.com/niakr1s/nrg-go/src/geo"
 )
 
 type ID int
@@ -11,17 +10,15 @@ type ID int
 const (
 	ShapeID ID = iota
 	VectorID
+	SpeedID
+	PosID
 )
 
-type Component interface{}
-
-type Shape interface {
-	Draw(board *ebiten.Image)
-	Intersects(rhs Shape) bool
-	Move(vec geo.Vector, dist geo.Distance)
-	Center() geo.Pos
+type Component interface {
+	ID() ID
 }
 
-type Vector interface {
-	Vector() geo.Vector
+type Shape interface {
+	Component
+	Draw(board *ebiten.Image, pos Pos)
 }
