@@ -66,7 +66,7 @@ func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 	switch rhs := rhs.(type) {
 	case *Circle:
 		dist := distance(selfCenter, rhsCenter)
-		return dist <= c.R+rhs.R
+		return dist <= (c.R+rhs.R)/2
 
 	default:
 		log.Errorf("Circle.Intersects: got unknown rhs: %v", rhs)
