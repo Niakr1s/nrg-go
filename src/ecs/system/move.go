@@ -20,6 +20,7 @@ func (m *Move) Step() {
 	defer m.reg.RUnlock()
 	for _, e := range m.reg.Entities {
 		m.moveOneEntity(e)
+		m.correctEntityInBoard(e)
 	}
 	m.correctPos()
 }
@@ -38,7 +39,7 @@ func (m *Move) correctPos() {
 		for j := i + 1; j < len(m.reg.Entities); j++ {
 			rhs := m.reg.Entities[j]
 			rhs.Lock()
-			rcs := rhs.GetComponents(component.PosID, component.SpeedID, component.ShapeID)
+			rcs := rhs.GetComponents(component.PosID, component.ShapeID)
 			if rcs == nil {
 				rhs.Unlock()
 				continue
@@ -62,23 +63,33 @@ func (m *Move) correctPos() {
 func (m *Move) moveOneEntity(e *entity.Entity) {
 	e.Lock()
 	defer e.Unlock()
-	cs := e.GetComponents(component.VectorID, component.PosID, component.SpeedID, component.ShapeID)
+	cs := e.GetComponents(component.VectorID, component.PosID, component.SpeedID)
 	if cs == nil {
 		return
 	}
 	vec := cs[0].(component.Vector)
 	pos := cs[1].(component.Pos)
 	speed := cs[2].(component.Speed)
-	shape := cs[3].(component.Shape)
 	// no speed - no move
 	if speed <= 0 {
 		e.RemoveComponents(component.SpeedID)
 		return
 	}
-	nextPos := pos.Move(vec, speed)
-	bound := shape.Bound(nextPos)
-	nextPos, _ = correctPosBoard(nextPos, bound, m.boardW, m.boardH)
-	e.SetComponents(nextPos)
+	e.SetComponents(pos.Move(vec, speed))
+}
+
+func (m *Move) correctEntityInBoard(e *entity.Entity) {
+	e.Lock()
+	defer e.Unlock()
+	cs := e.GetComponents(component.PosID, component.ShapeID)
+	if cs == nil {
+		return
+	}
+	pos := cs[0].(component.Pos)
+	shape := cs[1].(component.Shape)
+	bound := shape.Bound(pos)
+	pos, _ = correctPosBoard(pos, bound, m.boardW, m.boardH)
+	e.SetComponents(pos)
 }
 
 func correctPosBoard(pos component.Pos, bound component.Bound, boardW, boardH float64) (component.Pos, bool) {

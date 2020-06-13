@@ -75,14 +75,15 @@ func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 }
 
 func (c *Circle) CorrectedPos(selfCenter, rhsCenter Pos, selfSpeed, rhsSpeed Speed, rhs Shape) (Pos, Pos) {
-	sumSpeed := selfSpeed + rhsSpeed
+	// sumSpeed := selfSpeed + rhsSpeed
 	if c.Intersects(selfCenter, rhsCenter, rhs) {
 		switch rhs := rhs.(type) {
 		case *Circle:
 			dist := distance(selfCenter, rhsCenter)
 			diff := (c.R+rhs.R)/2 - dist
 			selfVec, rhsVec := NewVectorFromPos(rhsCenter, selfCenter), NewVectorFromPos(selfCenter, rhsCenter)
-			selfDist, rhsDist := diff*float64(selfSpeed)/float64(sumSpeed), diff*float64(rhsSpeed)/float64(sumSpeed)
+			// selfDist, rhsDist := diff*float64(selfSpeed)/float64(sumSpeed), diff*float64(rhsSpeed)/float64(sumSpeed)
+			selfDist, rhsDist := diff*.5, diff*.5
 			selfCenter, rhsCenter = selfCenter.Move(selfVec, Speed(selfDist)), rhsCenter.Move(rhsVec, Speed(rhsDist))
 
 		default:
