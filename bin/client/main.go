@@ -35,8 +35,6 @@ func main() {
 		WithTags(tag.PlayerID, tag.UserID)
 	client.Reg.AddEntity(player)
 
-	client.StartProduceBoard()
-
 	if err := ebiten.RunGame(client); err != nil {
 		log.Fatal(err)
 	}

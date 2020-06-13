@@ -31,6 +31,8 @@ func (c *Client) Init() {
 	ebiten.SetWindowTitle("Hello, World!")
 	ebiten.SetRunnableOnUnfocused(true)
 
+	c.startProduceBoard()
+
 	c.systems = append(c.systems, system.NewKeyBoard(c.Reg))
 }
 
@@ -60,7 +62,7 @@ func (c *Client) Draw(screen *ebiten.Image) {
 	c.drawBoard(screen)
 }
 
-func (c *Client) StartProduceBoard() {
+func (c *Client) startProduceBoard() {
 	go func() {
 		for {
 			board, _ := ebiten.NewImage(1000, 1000, ebiten.FilterDefault)
