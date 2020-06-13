@@ -36,7 +36,8 @@ func (c *Client) Init() {
 
 	c.systems = append(c.systems,
 		system.NewKeyBoard(c.Reg),
-		system.NewMove(c.Reg))
+		system.NewMove(c.Reg, 1000, 1000),
+	)
 }
 
 // Update ...

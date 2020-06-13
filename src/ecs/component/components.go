@@ -1,9 +1,5 @@
 package component
 
-import (
-	"github.com/hajimehoshi/ebiten"
-)
-
 type ID int
 
 // IDs
@@ -16,11 +12,6 @@ const (
 
 type Component interface {
 	ID() ID
-}
-
-type Shape interface {
-	Component
-	Draw(board *ebiten.Image, pos Pos)
 }
 
 type Components []Component

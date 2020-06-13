@@ -6,6 +6,25 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type Shape interface {
+	Component
+	Draw(board *ebiten.Image, pos Pos)
+
+	Bound(center Pos) Bound
+}
+
+type Bound struct {
+	TopLeft, BotRight *Pos
+}
+
+func NewBound(center Pos, w, h float64) Bound {
+	left := center.X - w/2
+	right := center.X + w/2
+	top := center.Y - h/2
+	bot := center.Y + h/2
+	return Bound{TopLeft: NewPos(left, top), BotRight: NewPos(right, bot)}
+}
+
 // Circle ..
 type Circle struct {
 	R float64
@@ -34,4 +53,8 @@ func (c *Circle) Draw(board *ebiten.Image, pos Pos) {
 	op.GeoM.Translate(pos.X, pos.Y)
 
 	board.DrawImage(c.image, op)
+}
+
+func (c *Circle) Bound(center Pos) Bound {
+	return NewBound(center, c.R, c.R)
 }

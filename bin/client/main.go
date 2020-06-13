@@ -22,12 +22,12 @@ func main() {
 	for i := 0; i < 100; i++ {
 		circle := component.NewCircle(50, img.WhiteCircle)
 		player := entity.NewEntity().
-			SetComponents(circle, component.NewPos(500, 500), component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(1)).
+			SetComponents(circle, component.NewPos(500, 500), component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(10)).
 			SetTags(tag.PlayerID)
 		client.Reg.AddEntity(player)
 	}
 	player := entity.NewEntity().
-		SetComponents(component.NewCircle(50, img.WhiteCircle), component.NewPos(500, 500), component.NewSpeed(1)).
+		SetComponents(component.NewCircle(50, img.WhiteCircle), component.NewPos(500, 500), component.NewSpeed(10)).
 		SetTags(tag.UserID)
 
 	client.Reg.AddEntity(player)

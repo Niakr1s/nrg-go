@@ -15,6 +15,22 @@ func (v *Vector) ID() ID {
 	return VectorID
 }
 
+func (v *Vector) IsLeft() bool {
+	return math.Cos(float64(*v)) <= 0
+}
+
+func (v *Vector) IsRight() bool {
+	return math.Cos(float64(*v)) >= 0
+}
+
+func (v *Vector) IsTop() bool {
+	return math.Sin(float64(*v)) <= 0
+}
+
+func (v *Vector) IsBot() bool {
+	return math.Sin(float64(*v)) >= 0
+}
+
 type Speed float64
 
 func NewSpeed(sp float64) *Speed {
