@@ -37,6 +37,8 @@ func (c *Client) Init() {
 	c.systems = append(c.systems,
 		system.NewKeyBoard(c.Reg),
 		system.NewMove(c.Reg, config.BoardWidth, config.BoardHeight),
+		system.NewContain(c.Reg, config.BoardWidth, config.BoardHeight),
+		system.NewBounce(c.Reg),
 	)
 }
 
