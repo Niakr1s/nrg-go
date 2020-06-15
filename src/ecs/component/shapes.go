@@ -56,7 +56,7 @@ func (c *Circle) Draw(board *ebiten.Image, pos Pos) {
 	op := &ebiten.DrawImageOptions{}
 	w, h := c.image.Size()
 	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
-	scale := float64(c.R) / float64(w)
+	scale := float64(c.R*2) / float64(w)
 	op.GeoM.Scale(scale, scale)
 	op.GeoM.Translate(pos.X, pos.Y)
 
@@ -64,14 +64,14 @@ func (c *Circle) Draw(board *ebiten.Image, pos Pos) {
 }
 
 func (c *Circle) Bound(center Pos) Bound {
-	return NewBound(center, c.R, c.R)
+	return NewBound(center, c.R*2, c.R*2)
 }
 
 func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 	switch rhs := rhs.(type) {
 	case *Circle:
 		dist := distance(selfCenter, rhsCenter)
-		return dist <= (c.R+rhs.R)/2
+		return dist <= c.R+rhs.R
 
 	default:
 		log.Errorf("Circle.Intersects: got unknown rhs: %v", rhs)
@@ -84,7 +84,7 @@ func (c *Circle) BouncePos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObsta
 		switch rhs := rhs.(type) {
 		case *Circle:
 			dist := distance(selfCenter, rhsCenter)
-			diff := (c.R+rhs.R)/2 - dist
+			diff := c.R + rhs.R - dist
 			selfVec, rhsVec := NewVectorFromPos(rhsCenter, selfCenter), NewVectorFromPos(selfCenter, rhsCenter)
 			// selfDist, rhsDist := diff*float64(selfSpeed)/float64(sumSpeed), diff*float64(rhsSpeed)/float64(sumSpeed)
 			selfDist, rhsDist := diff*.5, diff*.5

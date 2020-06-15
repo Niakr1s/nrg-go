@@ -21,12 +21,12 @@ func main() {
 	client.Init()
 
 	// other players
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1; i++ {
 		circle := component.NewCircle(50, img.WhiteCircle)
 		player := entity.NewEntity().
 			SetComponents(
 				circle,
-				component.NewPos(500, 500),
+				component.NewPos(200, 200),
 				component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(1),
 				component.NewGround(false),
 				component.NewHP(100),
@@ -36,12 +36,12 @@ func main() {
 	}
 
 	// obstacles
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 1; i++ {
 		circle := component.NewCircle(50, img.RedCircle)
 		player := entity.NewEntity().
 			SetComponents(
 				circle,
-				component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100)),
+				component.NewPos(800, 800),
 				component.NewGround(true),
 			).
 			SetTags(tag.Player)
@@ -62,19 +62,7 @@ func main() {
 
 	go func() {
 		for {
-			player.RLock()
-			hp := player.GetComponents(component.HpID)
-			if hp == nil {
-				return
-			}
-			log.Tracef("Player's hp: %d", hp[0].(component.HP).Current)
-			player.RUnlock()
-			<-time.After(time.Second)
-		}
-	}()
-
-	go func() {
-		for {
+			<-time.After(time.Second * 2)
 			randPos := component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))
 			bullet := entity.NewEntity().
 				SetComponents(
@@ -88,7 +76,6 @@ func main() {
 			client.Reg.Lock()
 			client.Reg.AddEntity(bullet)
 			client.Reg.Unlock()
-			<-time.After(time.Millisecond * 200)
 		}
 	}()
 

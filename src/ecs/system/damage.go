@@ -2,7 +2,9 @@ package system
 
 import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
+	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
+	log "github.com/sirupsen/logrus"
 )
 
 type Damage struct {
@@ -14,15 +16,13 @@ func NewDamage(reg *registry.Registry) *Damage {
 }
 
 func (d *Damage) Step() {
-	d.reg.Lock()
-	d.reg.Unlock()
+	d.reg.RLock()
+	defer d.reg.RUnlock()
 	for i := 0; i < len(d.reg.Entities); i++ {
 		lhs := d.reg.Entities[i]
 		lhs.Lock()
 		lcs := lhs.GetComponents(component.PosID, component.ShapeID)
-		lDamageCs := lhs.GetComponents(component.DamageID)
-		lHpCs := lhs.GetComponents(component.HpID)
-		if lcs == nil || (lDamageCs == nil && lHpCs == nil) {
+		if lcs == nil {
 			lhs.Unlock()
 			continue
 		}
@@ -32,9 +32,7 @@ func (d *Damage) Step() {
 			rhs := d.reg.Entities[j]
 			rhs.Lock()
 			rcs := rhs.GetComponents(component.PosID, component.ShapeID)
-			rDamageCs := rhs.GetComponents(component.DamageID)
-			rHpCs := rhs.GetComponents(component.HpID)
-			if rcs == nil || (rDamageCs == nil && rHpCs == nil) {
+			if rcs == nil {
 				rhs.Unlock()
 				continue
 			}
@@ -44,16 +42,22 @@ func (d *Damage) Step() {
 				rhs.Unlock()
 				continue
 			}
-			if lHpCs != nil && rDamageCs != nil {
-				lHp, rDmg := lHpCs[0].(component.HP), rDamageCs[0].(component.Damage)
-				lhs.SetComponents(lHp.Decrease(rDmg.Dmg))
-			}
-			if rHpCs != nil && lDamageCs != nil {
-				rHp, lDmg := lHpCs[0].(component.HP), rDamageCs[0].(component.Damage)
-				rhs.SetComponents(rHp.Decrease(lDmg.Dmg))
-			}
+			dealDamage(lhs, rhs)
+			dealDamage(rhs, lhs)
 			rhs.Unlock()
 		}
 		lhs.Unlock()
 	}
+}
+
+func dealDamage(attacker, defendant *entity.Entity) {
+	dmgCs := attacker.GetComponents(component.DamageID)
+	hpCs := defendant.GetComponents(component.HpID)
+	if dmgCs == nil || hpCs == nil {
+		return
+	}
+	dmg, hp := dmgCs[0].(component.Damage), hpCs[0].(component.HP)
+	newHp := hp.Decrease(dmg.Dmg)
+	log.Infof("dealt %d damage, old hp: %d, new hp: %d", dmg.Dmg, hp.Current, newHp.Current)
+	defendant = defendant.SetComponents(newHp)
 }
