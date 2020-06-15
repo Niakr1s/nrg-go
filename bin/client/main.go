@@ -83,7 +83,8 @@ func main() {
 					component.NewVectorFromPos(randPos, component.NewPos(500, 500)),
 					component.NewSpeed(5),
 					component.NewDamage(10),
-				)
+				).
+				SetTags(tag.Bullet)
 			client.Reg.Lock()
 			client.Reg.AddEntity(bullet)
 			client.Reg.Unlock()

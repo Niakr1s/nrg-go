@@ -28,6 +28,11 @@ func NewBound(center Pos, w, h float64) Bound {
 	return Bound{TopLeft: NewPos(left, top), BotRight: NewPos(right, bot)}
 }
 
+func (b Bound) Outside(other Bound) bool {
+	return b.TopLeft.X > other.BotRight.X || b.TopLeft.Y > other.BotRight.Y ||
+		b.BotRight.X < other.TopLeft.X || b.BotRight.Y < other.TopLeft.Y
+}
+
 // Circle ..
 type Circle struct {
 	R float64
