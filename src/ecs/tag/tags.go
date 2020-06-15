@@ -8,7 +8,7 @@ const (
 	PlayerID ID = iota
 	// UserID is keyboard-controlled player
 	UserID
-	// GroundID is used to distinguish ground bodies from dynamic
+	// GroundID is used to distinguish ground bodies, that can collide with each other other
 	GroundID
 )
 

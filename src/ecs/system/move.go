@@ -30,7 +30,7 @@ func (m *Move) correctPos() {
 		lhs := m.reg.Entities[i]
 		lhs.Lock()
 		lcs := lhs.GetComponents(component.PosID, component.ShapeID)
-		if lcs == nil {
+		if lcs == nil || !lhs.HasTags(tag.GroundID) {
 			lhs.Unlock()
 			continue
 		}
@@ -40,7 +40,7 @@ func (m *Move) correctPos() {
 			rhs := m.reg.Entities[j]
 			rhs.Lock()
 			rcs := rhs.GetComponents(component.PosID, component.ShapeID)
-			if rcs == nil {
+			if rcs == nil || !rhs.HasTags(tag.GroundID) {
 				rhs.Unlock()
 				continue
 			}
@@ -81,7 +81,7 @@ func (m *Move) correctEntityInBoard(e *entity.Entity) {
 	e.Lock()
 	defer e.Unlock()
 	cs := e.GetComponents(component.PosID, component.ShapeID)
-	if cs == nil {
+	if cs == nil || !e.HasTags(tag.GroundID) {
 		return
 	}
 	pos := cs[0].(component.Pos)

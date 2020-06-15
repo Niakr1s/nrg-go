@@ -18,15 +18,17 @@ func main() {
 
 	client := client.New()
 	client.Init()
-	// for test
+
+	// other players
 	for i := 0; i < 100; i++ {
 		circle := component.NewCircle(50, img.WhiteCircle)
 		player := entity.NewEntity().
 			SetComponents(circle, component.NewPos(500, 500), component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(1)).
-			SetTags(tag.PlayerID)
+			SetTags(tag.PlayerID, tag.GroundID)
 		client.Reg.AddEntity(player)
 	}
 
+	// obstacles
 	for i := 0; i < 10; i++ {
 		circle := component.NewCircle(50, img.RedCircle)
 		player := entity.NewEntity().
@@ -36,9 +38,10 @@ func main() {
 		client.Reg.AddEntity(player)
 	}
 
+	// player
 	player := entity.NewEntity().
 		SetComponents(component.NewCircle(50, img.BlueCircle), component.NewPos(500, 500), component.NewSpeed(10)).
-		SetTags(tag.UserID, tag.PlayerID)
+		SetTags(tag.UserID, tag.PlayerID, tag.GroundID)
 
 	client.Reg.AddEntity(player)
 
