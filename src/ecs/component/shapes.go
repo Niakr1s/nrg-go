@@ -13,7 +13,7 @@ type Shape interface {
 	Draw(board *ebiten.Image, pos Pos)
 	Bound(center Pos) Bound
 	Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool
-	CorrectedPos(selfCenter, rhsCenter Pos, selfIsGround, rhsIsGround bool, rhs Shape) (Pos, Pos)
+	CorrectedPos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos)
 }
 
 type Bound struct {
@@ -74,7 +74,7 @@ func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 	}
 }
 
-func (c *Circle) CorrectedPos(selfCenter, rhsCenter Pos, selfIsGround, rhsIsGround bool, rhs Shape) (Pos, Pos) {
+func (c *Circle) CorrectedPos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos) {
 	if c.Intersects(selfCenter, rhsCenter, rhs) {
 		switch rhs := rhs.(type) {
 		case *Circle:
@@ -84,9 +84,9 @@ func (c *Circle) CorrectedPos(selfCenter, rhsCenter Pos, selfIsGround, rhsIsGrou
 			// selfDist, rhsDist := diff*float64(selfSpeed)/float64(sumSpeed), diff*float64(rhsSpeed)/float64(sumSpeed)
 			selfDist, rhsDist := diff*.5, diff*.5
 			// we shouldn't move ground bodies
-			if selfIsGround && !rhsIsGround {
+			if selfIsObstacle && !rhsIsObstacle {
 				selfDist, rhsDist = 0, diff
-			} else if !selfIsGround && rhsIsGround {
+			} else if !selfIsObstacle && rhsIsObstacle {
 				selfDist, rhsDist = diff, 0
 			}
 			selfCenter, rhsCenter = selfCenter.Move(selfVec, Speed(selfDist)), rhsCenter.Move(rhsVec, Speed(rhsDist))

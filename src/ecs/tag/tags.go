@@ -8,8 +8,6 @@ const (
 	PlayerID ID = iota
 	// UserID is keyboard-controlled player
 	UserID
-	// GroundID is used to distinguish ground bodies, that can collide with each other other
-	GroundID
 )
 
 type Tag interface {
@@ -34,10 +32,4 @@ func NewUser() *User {
 
 func (u *User) ID() ID {
 	return UserID
-}
-
-type Ground struct{}
-
-func (d Ground) ID() ID {
-	return GroundID
 }

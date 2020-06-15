@@ -4,7 +4,6 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
-	"github.com/niakr1s/nrg-go/src/ecs/tag"
 )
 
 // Contain is a system, that contains ground bodies inside board.
@@ -28,8 +27,8 @@ func (c *Contain) Step() {
 func (c *Contain) correctEntityInBoard(e *entity.Entity) {
 	e.Lock()
 	defer e.Unlock()
-	cs := e.GetComponents(component.PosID, component.ShapeID)
-	if cs == nil || !e.HasTags(tag.GroundID) {
+	cs := e.GetComponents(component.PosID, component.ShapeID, component.GroundID)
+	if cs == nil {
 		return
 	}
 	pos := cs[0].(component.Pos)

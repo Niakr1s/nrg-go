@@ -23,8 +23,9 @@ func main() {
 	for i := 0; i < 100; i++ {
 		circle := component.NewCircle(50, img.WhiteCircle)
 		player := entity.NewEntity().
-			SetComponents(circle, component.NewPos(500, 500), component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(1)).
-			SetTags(tag.PlayerID, tag.GroundID)
+			SetComponents(circle, component.NewPos(500, 500), component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(1),
+				component.NewGround(false)).
+			SetTags(tag.PlayerID)
 		client.Reg.AddEntity(player)
 	}
 
@@ -33,15 +34,17 @@ func main() {
 		circle := component.NewCircle(50, img.RedCircle)
 		player := entity.NewEntity().
 			SetComponents(circle,
-				component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))).
-			SetTags(tag.PlayerID, tag.GroundID)
+				component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100)),
+				component.NewGround(true)).
+			SetTags(tag.PlayerID)
 		client.Reg.AddEntity(player)
 	}
 
 	// player
 	player := entity.NewEntity().
-		SetComponents(component.NewCircle(50, img.BlueCircle), component.NewPos(500, 500), component.NewSpeed(10)).
-		SetTags(tag.UserID, tag.PlayerID, tag.GroundID)
+		SetComponents(component.NewCircle(50, img.BlueCircle), component.NewPos(500, 500), component.NewSpeed(10),
+			component.NewGround(false)).
+		SetTags(tag.UserID, tag.PlayerID)
 
 	client.Reg.AddEntity(player)
 

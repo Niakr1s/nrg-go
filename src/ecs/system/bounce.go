@@ -3,7 +3,6 @@ package system
 import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
-	"github.com/niakr1s/nrg-go/src/ecs/tag"
 )
 
 // Bounce is a system, that bounces ground bodies with each other.
@@ -23,28 +22,30 @@ func (b *Bounce) Step() {
 	for i := 0; i < len(b.reg.Entities); i++ {
 		lhs := b.reg.Entities[i]
 		lhs.Lock()
-		lcs := lhs.GetComponents(component.PosID, component.ShapeID)
-		if lcs == nil || !lhs.HasTags(tag.GroundID) {
+		lcs := lhs.GetComponents(component.PosID, component.ShapeID, component.GroundID)
+		if lcs == nil {
 			lhs.Unlock()
 			continue
 		}
 		lhsPos := lcs[0].(component.Pos)
 		lhsShape := lcs[1].(component.Shape)
+		lhsGround := lcs[2].(component.Ground)
 		for j := i + 1; j < len(b.reg.Entities); j++ {
 			rhs := b.reg.Entities[j]
 			rhs.Lock()
-			rcs := rhs.GetComponents(component.PosID, component.ShapeID)
-			if rcs == nil || !rhs.HasTags(tag.GroundID) {
+			rcs := rhs.GetComponents(component.PosID, component.ShapeID, component.GroundID)
+			if rcs == nil {
 				rhs.Unlock()
 				continue
 			}
 			rhsPos := rcs[0].(component.Pos)
 			rhsShape := rcs[1].(component.Shape)
+			rhsGround := rcs[2].(component.Ground)
 			if !lhsShape.Intersects(lhsPos, rhsPos, rhsShape) {
 				rhs.Unlock()
 				continue
 			}
-			lhsPos, rhsPos = lhsShape.CorrectedPos(lhsPos, rhsPos, lhs.HasTags(tag.GroundID), rhs.HasTags(tag.GroundID), rhsShape)
+			lhsPos, rhsPos = lhsShape.CorrectedPos(lhsPos, rhsPos, lhsGround.Obstacle, rhsGround.Obstacle, rhsShape)
 			lhs.SetComponents(lhsPos)
 			rhs.SetComponents(rhsPos)
 			rhs.Unlock()

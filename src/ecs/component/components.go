@@ -8,6 +8,7 @@ const (
 	VectorID
 	SpeedID
 	PosID
+	GroundID
 )
 
 type Component interface {
