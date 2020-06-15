@@ -31,7 +31,7 @@ func main() {
 				component.NewGround(false),
 				component.NewHP(100),
 			).
-			SetTags(tag.PlayerID)
+			SetTags(tag.Player)
 		client.Reg.AddEntity(player)
 	}
 
@@ -44,7 +44,7 @@ func main() {
 				component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100)),
 				component.NewGround(true),
 			).
-			SetTags(tag.PlayerID)
+			SetTags(tag.Player)
 		client.Reg.AddEntity(player)
 	}
 
@@ -57,7 +57,7 @@ func main() {
 			component.NewGround(false),
 			component.NewHP(100),
 		).
-		SetTags(tag.UserID, tag.PlayerID)
+		SetTags(tag.User, tag.Player)
 	client.Reg.AddEntity(player)
 
 	go func() {
