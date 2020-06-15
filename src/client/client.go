@@ -3,7 +3,6 @@ package client
 import (
 	"image/color"
 	"math"
-	"sync"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/config"
@@ -47,16 +46,9 @@ func (c *Client) Init() {
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
-	wg := sync.WaitGroup{}
-	wg.Add(len(c.systems))
 	for _, s := range c.systems {
-		s := s
-		go func() {
-			s.Step()
-			wg.Done()
-		}()
+		s.Step()
 	}
-	wg.Wait()
 	return nil
 }
 
