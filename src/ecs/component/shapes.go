@@ -40,19 +40,19 @@ type Circle struct {
 	image *ebiten.Image
 }
 
-func NewCircle(r float64, path string) *Circle {
+func NewCircle(r float64, path string) Circle {
 	image, err := img.Load(path)
 	if err != nil {
 		log.Fatal(err)
 	}
-	return &Circle{R: r, image: image}
+	return Circle{R: r, image: image}
 }
 
-func (c *Circle) ID() ID {
+func (c Circle) ID() ID {
 	return ShapeID
 }
 
-func (c *Circle) Draw(board *ebiten.Image, pos Pos) {
+func (c Circle) Draw(board *ebiten.Image, pos Pos) {
 	op := &ebiten.DrawImageOptions{}
 	w, h := c.image.Size()
 	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
@@ -63,13 +63,13 @@ func (c *Circle) Draw(board *ebiten.Image, pos Pos) {
 	board.DrawImage(c.image, op)
 }
 
-func (c *Circle) Bound(center Pos) Bound {
+func (c Circle) Bound(center Pos) Bound {
 	return NewBound(center, c.R*2, c.R*2)
 }
 
-func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
+func (c Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 	switch rhs := rhs.(type) {
-	case *Circle:
+	case Circle:
 		dist := distance(selfCenter, rhsCenter)
 		return dist <= c.R+rhs.R
 
@@ -79,10 +79,10 @@ func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 	}
 }
 
-func (c *Circle) BouncePos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos) {
+func (c Circle) BouncePos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos) {
 	if c.Intersects(selfCenter, rhsCenter, rhs) {
 		switch rhs := rhs.(type) {
-		case *Circle:
+		case Circle:
 			dist := distance(selfCenter, rhsCenter)
 			diff := c.R + rhs.R - dist
 			selfVec, rhsVec := NewVectorFromPos(rhsCenter, selfCenter), NewVectorFromPos(selfCenter, rhsCenter)
