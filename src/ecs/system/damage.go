@@ -18,7 +18,7 @@ func NewDamage(reg *registry.Registry) *Damage {
 func (d *Damage) Step() {
 	d.reg.RLock()
 	defer d.reg.RUnlock()
-	for i := 0; i < len(d.reg.Entities); i++ {
+	for i := range d.reg.Entities {
 		lhs := d.reg.Entities[i]
 		lhs.Lock()
 		lcs := lhs.GetComponents(component.PosID, component.ShapeID)
