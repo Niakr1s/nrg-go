@@ -4,6 +4,7 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
+	"github.com/niakr1s/nrg-go/src/ecs/tag"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -60,4 +61,7 @@ func dealDamage(attacker, defendant *entity.Entity) {
 	newHp := hp.Decrease(dmg.Dmg)
 	log.Infof("dealt %d damage, old hp: %d, new hp: %d", dmg.Dmg, hp.Current, newHp.Current)
 	defendant = defendant.SetComponents(newHp)
+	if newHp.IsDead() {
+		defendant.SetTags(tag.Destroyed)
+	}
 }
