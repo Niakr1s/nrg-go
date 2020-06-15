@@ -7,6 +7,10 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/config"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
+	"github.com/niakr1s/nrg-go/src/ecs/entity"
+	"github.com/niakr1s/nrg-go/src/ecs/tag"
+	"github.com/niakr1s/nrg-go/src/img"
+	"github.com/sirupsen/logrus"
 )
 
 func (c *Client) produceBoard() *ebiten.Image {
@@ -18,12 +22,43 @@ func (c *Client) produceBoard() *ebiten.Image {
 		if cs := e.GetComponents(component.ShapeID, component.PosID); cs != nil {
 			shape := cs[0].(component.Shape)
 			pos := cs[1].(component.Pos)
-			shape.Draw(board, pos)
+			switch shape := shape.(type) {
+			case component.Circle:
+				image, err := img.Load(getCirclePath(e))
+				if err != nil {
+					panic(err)
+				}
+				drawCircle(board, image, pos, shape)
+			default:
+				logrus.Warningf("Client.produceBoard(): couldn't draw unknowh shape")
+			}
 		}
 		e.RUnlock()
 	}
 	c.Reg.RUnlock()
 	return board
+}
+
+func getCirclePath(e *entity.Entity) string {
+	if e.HasTags(tag.User) {
+		return img.BlueCircle
+	} else if e.HasTags(tag.Player) {
+		return img.WhiteCircle
+	} else if e.HasTags(tag.Bullet) {
+		return img.RedCircle
+	}
+	return img.RedCircle
+}
+
+func drawCircle(board, image *ebiten.Image, pos component.Pos, circle component.Circle) {
+	op := &ebiten.DrawImageOptions{}
+	w, h := image.Size()
+	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
+	scale := float64(circle.R*2) / float64(w)
+	op.GeoM.Scale(scale, scale)
+	op.GeoM.Translate(pos.X, pos.Y)
+
+	board.DrawImage(image, op)
 }
 
 func (c *Client) drawBoard(screen *ebiten.Image) {

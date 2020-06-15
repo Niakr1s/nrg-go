@@ -9,7 +9,6 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/ecs/tag"
-	"github.com/niakr1s/nrg-go/src/img"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -22,7 +21,7 @@ func main() {
 
 	// other players
 	for i := 0; i < 1; i++ {
-		circle := component.NewCircle(50, img.WhiteCircle)
+		circle := component.NewCircle(50)
 		player := entity.NewEntity().
 			SetComponents(
 				circle,
@@ -37,7 +36,7 @@ func main() {
 
 	// obstacles
 	for i := 0; i < 1; i++ {
-		circle := component.NewCircle(50, img.RedCircle)
+		circle := component.NewCircle(50)
 		player := entity.NewEntity().
 			SetComponents(
 				circle,
@@ -51,7 +50,7 @@ func main() {
 	// player
 	player := entity.NewEntity().
 		SetComponents(
-			component.NewCircle(50, img.BlueCircle),
+			component.NewCircle(50),
 			component.NewPos(500, 500),
 			component.NewSpeed(10),
 			component.NewGround(false),
@@ -66,7 +65,7 @@ func main() {
 			randPos := component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))
 			bullet := entity.NewEntity().
 				SetComponents(
-					component.NewCircle(20, img.RedCircle),
+					component.NewCircle(20),
 					randPos,
 					component.NewVectorFromPos(randPos, component.NewPos(500, 500)),
 					component.NewSpeed(5),
