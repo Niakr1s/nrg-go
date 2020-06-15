@@ -8,4 +8,6 @@ const (
 	Player ID = iota
 	// User is keyboard-controlled player
 	User
+
+	Destroyed
 )

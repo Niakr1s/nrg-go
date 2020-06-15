@@ -40,6 +40,7 @@ func (c *Client) Init() {
 		system.NewDamage(c.Reg),
 		system.NewContain(c.Reg, config.BoardWidth, config.BoardHeight),
 		system.NewBounce(c.Reg),
+		system.NewClean(c.Reg),
 	)
 }
 
