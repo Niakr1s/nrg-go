@@ -57,39 +57,3 @@ func (d *Damage) Step() {
 		lhs.Unlock()
 	}
 }
-
-// func (d *Damage) Step() {
-// 	d.reg.RLock()
-// 	d.reg.RUnlock()
-// 	for _, dmgE := range d.reg.Entities {
-// 		dmgE.RLock()
-// 		dmgCs := dmgE.GetComponents(component.PosID, component.ShapeID, component.DamageID)
-// 		if dmgCs == nil {
-// 			dmgE.RUnlock()
-// 			continue
-// 		}
-// 		dmgPos := dmgCs[0].(component.Pos)
-// 		dmgShape := dmgCs[1].(component.Shape)
-// 		dmg := dmgCs[2].(component.Damage)
-// 		for _, hpE := range d.reg.Entities {
-// 			hpE.RLock() // rlock because of upper rlock, hpE can be dmgE itself
-// 			hpCs := hpE.GetComponents(component.PosID, component.ShapeID, component.HpID)
-// 			if hpCs == nil || hpE.ID == dmgE.ID {
-// 				hpE.RUnlock()
-// 				continue
-// 			}
-// 			hpE.RUnlock()
-// 			hpE.Lock()
-// 			hpPos := hpCs[0].(component.Pos)
-// 			hpShape := hpCs[1].(component.Shape)
-// 			hp := hpCs[2].(component.HP)
-// 			if !dmgShape.Intersects(dmgPos, hpPos, hpShape) {
-// 				hpE.Unlock()
-// 				continue
-// 			}
-// 			hpE.SetComponents(hp.Decrease(dmg.Dmg))
-// 			hpE.Unlock()
-// 		}
-// 		dmgE.RUnlock()
-// 	}
-// }
