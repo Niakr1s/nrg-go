@@ -9,6 +9,8 @@ const (
 	SpeedID
 	PosID
 	GroundID
+	DamageID
+	HpID
 )
 
 type Component interface {
