@@ -13,7 +13,7 @@ type Shape interface {
 	Draw(board *ebiten.Image, pos Pos)
 	Bound(center Pos) Bound
 	Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool
-	CorrectedPos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos)
+	BouncePos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos)
 }
 
 type Bound struct {
@@ -74,7 +74,7 @@ func (c *Circle) Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool {
 	}
 }
 
-func (c *Circle) CorrectedPos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos) {
+func (c *Circle) BouncePos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos) {
 	if c.Intersects(selfCenter, rhsCenter, rhs) {
 		switch rhs := rhs.(type) {
 		case *Circle:

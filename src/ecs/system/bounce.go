@@ -45,7 +45,7 @@ func (b *Bounce) Step() {
 				rhs.Unlock()
 				continue
 			}
-			lhsPos, rhsPos = lhsShape.CorrectedPos(lhsPos, rhsPos, lhsGround.Obstacle, rhsGround.Obstacle, rhsShape)
+			lhsPos, rhsPos = lhsShape.BouncePos(lhsPos, rhsPos, lhsGround.Obstacle, rhsGround.Obstacle, rhsShape)
 			lhs.SetComponents(lhsPos)
 			rhs.SetComponents(rhsPos)
 			rhs.Unlock()
