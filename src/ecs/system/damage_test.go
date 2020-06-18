@@ -19,28 +19,28 @@ func TestDamage_Step(t *testing.T) {
 	}{
 		{"should deal damage #1",
 			entity.NewEntity().SetComponents(component.NewPos(500, 500),
-				&component.Circle{R: 1}, component.NewDamage(10)).
+				component.Circle{R: 1}, component.NewDamage(10)).
 				SetTags(tag.Bullet),
 			entity.NewEntity().SetComponents(component.NewPos(500, 500),
-				&component.Circle{R: 10}, component.NewHP(100)).
+				component.Circle{R: 10}, component.NewHP(100)).
 				SetTags(tag.User),
 			10,
 		},
 		{"should deal damage #2",
 			entity.NewEntity().SetComponents(component.NewPos(500, 505),
-				&component.Circle{R: 1}, component.NewDamage(10)).
+				component.Circle{R: 1}, component.NewDamage(10)).
 				SetTags(tag.Bullet),
 			entity.NewEntity().SetComponents(component.NewPos(500, 500),
-				&component.Circle{R: 10}, component.NewHP(100)).
+				component.Circle{R: 10}, component.NewHP(100)).
 				SetTags(tag.User),
 			10,
 		},
 		{"should deal damage #3",
 			entity.NewEntity().SetComponents(component.NewPos(500, 510),
-				&component.Circle{R: 1}, component.NewDamage(10)).
+				component.Circle{R: 1}, component.NewDamage(10)).
 				SetTags(tag.Bullet),
 			entity.NewEntity().SetComponents(component.NewPos(500, 500),
-				&component.Circle{R: 10}, component.NewHP(100)).
+				component.Circle{R: 10}, component.NewHP(100)).
 				SetTags(tag.User),
 			10,
 		},
