@@ -53,6 +53,10 @@ func (v Vector) Mirrored() Vector {
 	return NewVectorFromPos(NewPos(0, 0), NewPos(-diffX, -diffY))
 }
 
+func (v Vector) Direction() Vector {
+	return v
+}
+
 type Speed float64
 
 func NewSpeed(sp float64) Speed {

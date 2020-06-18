@@ -7,18 +7,18 @@ import (
 )
 
 type Weapon struct {
-	Direction Vector
-	Guns      []*Gun
+	Dir  WeaponDirection
+	Guns []*Gun
 
 	ReloadDuration time.Duration
 	reloadDone     chan struct{}
 	ready          bool
 }
 
-// NewWeapon constructs Weapon with default reload duration.
-func NewWeapon(dir Vector, gunsDirDiffs ...Vector) *Weapon {
+// NewWeapon constructs Weapon with default reload duration and constant Direction.
+func NewWeapon(gunsDirDiffs ...Vector) *Weapon {
 	res := &Weapon{
-		Direction:      dir,
+		Dir:            NewVector(0),
 		Guns:           make([]*Gun, len(gunsDirDiffs)),
 		ReloadDuration: config.ReloadDuration,
 		reloadDone:     make(chan struct{}, 1),
@@ -28,6 +28,11 @@ func NewWeapon(dir Vector, gunsDirDiffs ...Vector) *Weapon {
 		res.Guns[i] = NewGun(res, diff)
 	}
 	return res
+}
+
+func (w *Weapon) SetDirection(dir WeaponDirection) *Weapon {
+	w.Dir = dir
+	return w
 }
 
 func (w *Weapon) ID() ID {
@@ -55,7 +60,7 @@ func (w *Weapon) Fire() []Vector {
 	}
 	res := make([]Vector, len(w.Guns))
 	for i, g := range w.Guns {
-		res[i] = g.DirectionDiff.Sum(w.Direction)
+		res[i] = g.DirectionDiff.Sum(w.Dir.Direction())
 	}
 	w.startReloading()
 	return res
