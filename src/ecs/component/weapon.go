@@ -1,6 +1,7 @@
 package component
 
 import (
+	"sync"
 	"time"
 
 	"github.com/niakr1s/nrg-go/src/config"
@@ -11,8 +12,9 @@ type Weapon struct {
 	Guns []*Gun
 
 	ReloadDuration time.Duration
-	reloadDone     chan struct{}
-	ready          bool
+
+	readyMutex sync.Mutex
+	ready      bool
 }
 
 // NewWeapon constructs Weapon with default reload duration and constant Direction.
@@ -21,7 +23,6 @@ func NewWeapon(gunsDirDiffs ...Vector) *Weapon {
 		Dir:            NewVector(0),
 		Guns:           make([]*Gun, len(gunsDirDiffs)),
 		ReloadDuration: config.ReloadDuration,
-		reloadDone:     make(chan struct{}, 1),
 		ready:          true,
 	}
 	for i, diff := range gunsDirDiffs {
@@ -45,11 +46,8 @@ func (w *Weapon) SetReloadDuration(d time.Duration) *Weapon {
 }
 
 func (w *Weapon) IsReady() bool {
-	select {
-	case <-w.reloadDone:
-		w.ready = true
-	default:
-	}
+	w.readyMutex.Lock()
+	defer w.readyMutex.Unlock()
 	return w.ready
 }
 
@@ -74,7 +72,9 @@ func (w *Weapon) startReloading() {
 	w.ready = false
 	go func() {
 		<-time.After(w.ReloadDuration)
-		w.reloadDone <- struct{}{}
+		w.readyMutex.Lock()
+		defer w.readyMutex.Unlock()
+		w.ready = true
 	}()
 }
 
