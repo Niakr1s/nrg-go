@@ -42,6 +42,7 @@ func (c *Client) Init() {
 		system.NewMove(c.Reg, config.BoardWidth, config.BoardHeight),
 		system.NewContain(c.Reg, config.BoardWidth, config.BoardHeight),
 		system.NewBounce(c.Reg),
+		system.NewWeapon(c.Reg),
 		system.NewDamage(c.Reg),
 		system.NewDestroy(c.Reg, config.BoardWidth, config.BoardHeight),
 		system.NewClean(c.Reg),

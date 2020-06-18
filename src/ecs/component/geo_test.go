@@ -29,3 +29,23 @@ func TestNewVectorFromPos(t *testing.T) {
 		})
 	}
 }
+
+func TestVector_Mirrored(t *testing.T) {
+	tests := []struct {
+		name string
+		v    Vector
+		want Vector
+	}{
+		{"from right", NewVector(0), NewVector(math.Pi)},
+		{"from left", NewVector(math.Pi), NewVector(0)},
+		{"from top", NewVector(1.5 * math.Pi), NewVector(0.5 * math.Pi)},
+		{"from bot", NewVector(0.5 * math.Pi), NewVector(1.5 * math.Pi)},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.v.Mirrored()
+			assert.InDelta(t, tt.want.Cos(), got.Cos(), 0.01)
+			assert.InDelta(t, tt.want.Sin(), got.Sin(), 0.01)
+		})
+	}
+}

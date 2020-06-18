@@ -1,8 +1,8 @@
 package main
 
 import (
+	"math"
 	"math/rand"
-	"time"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/client"
@@ -49,19 +49,21 @@ func main() {
 
 	// player
 	player := entity.NewUser(component.NewPos(500, 500))
+	player.SetComponents(component.NewWeapon(component.NewVector(0),
+		component.NewVector(0), component.NewVector(math.Pi)))
 	client.Reg.AddEntity(player)
 
-	go func() {
-		for {
-			<-time.After(time.Second * 2)
-			randPos := component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))
-			vec := component.NewVectorFromPos(randPos, component.NewPos(500, 500))
-			bullet := entity.NewDefaultBullet(randPos, vec)
-			client.Reg.Lock()
-			client.Reg.AddEntity(bullet)
-			client.Reg.Unlock()
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		<-time.After(time.Second * 2)
+	// 		randPos := component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))
+	// 		vec := component.NewVectorFromPos(randPos, component.NewPos(500, 500))
+	// 		bullet := entity.NewDefaultBullet(randPos, vec)
+	// 		client.Reg.Lock()
+	// 		client.Reg.AddEntity(bullet)
+	// 		client.Reg.Unlock()
+	// 	}
+	// }()
 
 	if err := ebiten.RunGame(client); err != nil {
 		log.Fatal(err)

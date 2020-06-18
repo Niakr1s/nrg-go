@@ -11,6 +11,7 @@ const (
 	GroundID
 	DamageID
 	HpID
+	WeaponID
 )
 
 type Component interface {

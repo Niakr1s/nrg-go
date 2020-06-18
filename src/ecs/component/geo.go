@@ -36,6 +36,23 @@ func (v Vector) IsBot() bool {
 	return math.Sin(float64(v)) >= 0
 }
 
+func (v Vector) Sum(rhs Vector) Vector {
+	return NewVector(float64(rhs) + float64(v))
+}
+
+func (v Vector) Cos() float64 {
+	return math.Cos(float64(v))
+}
+
+func (v Vector) Sin() float64 {
+	return math.Sin(float64(v))
+}
+
+func (v Vector) Mirrored() Vector {
+	diffX, diffY := v.Cos(), v.Sin()
+	return NewVectorFromPos(NewPos(0, 0), NewPos(-diffX, -diffY))
+}
+
 type Speed float64
 
 func NewSpeed(sp float64) Speed {
@@ -64,4 +81,10 @@ func (p Pos) Move(vec Vector, sp Speed) Pos {
 	p.X += dx
 	p.Y += dy
 	return p
+}
+
+func (p Pos) Sum(rhs Pos) Pos {
+	rhs.X += p.X
+	rhs.Y += p.Y
+	return rhs
 }
