@@ -11,6 +11,8 @@ type Shape interface {
 	Bound(center Pos) Bound
 	Intersects(selfCenter, rhsCenter Pos, rhs Shape) bool
 	BouncePos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstacle bool, rhs Shape) (Pos, Pos)
+	// OuterPointInDirection should return Pos on the outer contour of shape.
+	OuterPointInDirection(selfCenter Pos, vec Vector) Pos
 }
 
 type Bound struct {
@@ -86,4 +88,13 @@ func (c Circle) BouncePos(selfCenter, rhsCenter Pos, selfIsObstacle, rhsIsObstac
 
 func distance(lhs, rhs Pos) float64 {
 	return math.Sqrt(math.Pow(lhs.X-rhs.X, 2) + math.Pow(lhs.Y-rhs.Y, 2))
+}
+
+// OuterPointInDirection returns Pos on the outer contour of shape.
+func (c Circle) OuterPointInDirection(selfCenter Pos, vec Vector) Pos {
+	diffX, diffY := math.Cos(float64(vec))*c.R, math.Sin(float64(vec))*c.R
+	res := selfCenter
+	res.X += diffX
+	res.Y += diffY
+	return res
 }
