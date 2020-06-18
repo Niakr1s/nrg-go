@@ -26,5 +26,27 @@ func NewUser(pos component.Pos) *Entity {
 			component.NewGround(false),
 			component.NewHP(100),
 		).
-		SetTags(tag.User, tag.Player)
+		SetTags(tag.User)
+}
+
+func NewEnemy(pos component.Pos) *Entity {
+	return NewEntity().
+		SetComponents(
+			component.NewCircle(50),
+			pos,
+			component.NewSpeed(10),
+			component.NewGround(false),
+			component.NewHP(100),
+		).
+		SetTags(tag.Enemy)
+}
+
+func NewObstacle(pos component.Pos) *Entity {
+	return NewEntity().
+		SetComponents(
+			component.NewCircle(50),
+			pos,
+			component.NewGround(true),
+		)
+
 }

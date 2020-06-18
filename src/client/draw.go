@@ -42,7 +42,7 @@ func (c *Client) produceBoard() *ebiten.Image {
 func getCirclePath(e *entity.Entity) string {
 	if e.HasTags(tag.User) {
 		return img.BlueCircle
-	} else if e.HasTags(tag.Player) {
+	} else if e.HasTags(tag.Enemy) {
 		return img.WhiteCircle
 	} else if e.HasTags(tag.Bullet) {
 		return img.RedCircle

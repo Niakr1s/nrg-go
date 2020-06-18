@@ -2,13 +2,11 @@ package main
 
 import (
 	"math"
-	"math/rand"
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/client"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
-	"github.com/niakr1s/nrg-go/src/ecs/tag"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -19,51 +17,17 @@ func main() {
 	client := client.New()
 	client.Init()
 
-	// other players
-	for i := 0; i < 1; i++ {
-		circle := component.NewCircle(50)
-		player := entity.NewEntity().
-			SetComponents(
-				circle,
-				component.NewPos(200, 200),
-				component.NewVector(rand.Float64()*2*3.14), component.NewSpeed(1),
-				component.NewGround(false),
-				component.NewHP(100),
-			).
-			SetTags(tag.Player)
-		client.Reg.AddEntity(player)
-	}
+	client.Reg.AddEntity(entity.NewUser(component.NewPos(500, 500)).
+		SetComponents(component.NewWeapon(component.NewVector(0),
+			component.NewVector(0), component.NewVector(math.Pi))),
+	)
 
-	// obstacles
-	for i := 0; i < 1; i++ {
-		circle := component.NewCircle(50)
-		player := entity.NewEntity().
-			SetComponents(
-				circle,
-				component.NewPos(800, 800),
-				component.NewGround(true),
-			).
-			SetTags(tag.Player)
-		client.Reg.AddEntity(player)
-	}
+	client.Reg.AddEntity(entity.NewEnemy(component.NewPos(200, 200)).
+		SetComponents(component.NewWeapon(component.NewVector(0),
+			component.NewVector(0), component.NewVector(0.5*math.Pi), component.NewVector(math.Pi), component.NewVector(1.5*math.Pi))),
+	)
 
-	// player
-	player := entity.NewUser(component.NewPos(500, 500))
-	player.SetComponents(component.NewWeapon(component.NewVector(0),
-		component.NewVector(0), component.NewVector(math.Pi)))
-	client.Reg.AddEntity(player)
-
-	// go func() {
-	// 	for {
-	// 		<-time.After(time.Second * 2)
-	// 		randPos := component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))
-	// 		vec := component.NewVectorFromPos(randPos, component.NewPos(500, 500))
-	// 		bullet := entity.NewDefaultBullet(randPos, vec)
-	// 		client.Reg.Lock()
-	// 		client.Reg.AddEntity(bullet)
-	// 		client.Reg.Unlock()
-	// 	}
-	// }()
+	client.Reg.AddEntity(entity.NewObstacle(component.NewPos(700, 200)))
 
 	if err := ebiten.RunGame(client); err != nil {
 		log.Fatal(err)
