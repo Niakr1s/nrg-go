@@ -36,18 +36,20 @@ func (w *Weapon) spawnBullets() []*entity.Entity {
 		shape := cs[1].(component.Shape)
 		weap := cs[2].(*component.Weapon)
 
-		bulletDirections := weap.Fire()
-		for _, bdir := range bulletDirections {
-			// creating bullet in the center of entity
-			bullet := entity.NewDefaultBullet(pos, bdir)
-			bulletShape := bullet.GetComponents(component.ShapeID)[0].(component.Shape)
-			moveDiff := shape.OuterPointInDirectionDiff(bdir).Sum(bulletShape.OuterPointInDirectionDiff(bdir))
+		if weap.Fire() {
+			bulletDirections := weap.GetGunDirs()
+			for _, bdir := range bulletDirections {
+				// creating bullet in the center of entity
+				bullet := entity.NewDefaultBullet(pos, bdir)
+				bulletShape := bullet.GetComponents(component.ShapeID)[0].(component.Shape)
+				moveDiff := shape.OuterPointInDirectionDiff(bdir).Sum(bulletShape.OuterPointInDirectionDiff(bdir))
 
-			newPos := pos.Sum(moveDiff)
-			bullet.SetComponents(newPos)
-			log.Tracef("spawned bullet at %v", newPos)
+				newPos := pos.Sum(moveDiff)
+				bullet.SetComponents(newPos)
+				log.Tracef("spawned bullet at %v", newPos)
 
-			bullets = append(bullets, bullet)
+				bullets = append(bullets, bullet)
+			}
 		}
 
 		e.RUnlock()

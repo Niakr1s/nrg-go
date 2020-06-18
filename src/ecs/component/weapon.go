@@ -54,15 +54,19 @@ func (w *Weapon) IsReady() bool {
 }
 
 // Fire gets directions of all guns and starts reload timer.
-func (w *Weapon) Fire() []Vector {
+func (w *Weapon) Fire() bool {
 	if !w.IsReady() {
-		return []Vector{}
+		return false
 	}
+	w.startReloading()
+	return true
+}
+
+func (w *Weapon) GetGunDirs() []Vector {
 	res := make([]Vector, len(w.Guns))
 	for i, g := range w.Guns {
 		res[i] = g.DirectionDiff.Sum(w.Dir.Direction())
 	}
-	w.startReloading()
 	return res
 }
 
