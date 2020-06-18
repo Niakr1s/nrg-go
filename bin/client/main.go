@@ -48,30 +48,15 @@ func main() {
 	}
 
 	// player
-	player := entity.NewEntity().
-		SetComponents(
-			component.NewCircle(50),
-			component.NewPos(500, 500),
-			component.NewSpeed(10),
-			component.NewGround(false),
-			component.NewHP(100),
-		).
-		SetTags(tag.User, tag.Player)
+	player := entity.NewUser(component.NewPos(500, 500))
 	client.Reg.AddEntity(player)
 
 	go func() {
 		for {
 			<-time.After(time.Second * 2)
 			randPos := component.NewPos(float64(rand.Intn(500)+100), float64(rand.Intn(500)+100))
-			bullet := entity.NewEntity().
-				SetComponents(
-					component.NewCircle(20),
-					randPos,
-					component.NewVectorFromPos(randPos, component.NewPos(500, 500)),
-					component.NewSpeed(5),
-					component.NewDamage(10),
-				).
-				SetTags(tag.Bullet)
+			vec := component.NewVectorFromPos(randPos, component.NewPos(500, 500))
+			bullet := entity.NewDefaultBullet(randPos, vec)
 			client.Reg.Lock()
 			client.Reg.AddEntity(bullet)
 			client.Reg.Unlock()
