@@ -40,7 +40,7 @@ func (w *Weapon) spawnBullets() []*entity.Entity {
 			bulletDirections := weap.GetGunDirs()
 			for _, bdir := range bulletDirections {
 				// creating bullet in the center of entity
-				bullet := entity.NewDefaultBullet(pos, bdir)
+				bullet := entity.NewDefaultBullet(pos, bdir, e.ID)
 				bulletShape := bullet.GetComponents(component.ShapeID)[0].(component.Shape)
 				moveDiff := shape.OuterPointInDirectionDiff(bdir).Sum(bulletShape.OuterPointInDirectionDiff(bdir))
 

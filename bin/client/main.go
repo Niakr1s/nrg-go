@@ -26,7 +26,7 @@ func main() {
 		SetComponents(component.NewWeapon(component.NewVector(0),
 			component.NewVector(0),
 			component.NewVector(0.5*math.Pi), component.NewVector(math.Pi), component.NewVector(1.5*math.Pi)).
-			SetDirection(component.NewAutoWeaponDirection(1.5*math.Pi, component.NewVector(0.5*math.Pi))),
+			SetDirection(component.NewAutoWeaponDirection(1.5*math.Pi, component.NewVector(0.3*math.Pi))),
 		),
 	)
 

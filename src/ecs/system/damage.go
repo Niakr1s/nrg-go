@@ -58,6 +58,10 @@ func dealDamage(attacker, defendant *entity.Entity) {
 		return
 	}
 	dmg, hp := dmgCs[0].(component.Damage), hpCs[0].(component.HP)
+	if parentCs := attacker.GetComponents(component.ParentID); parentCs != nil &&
+		parentCs[0].(entity.Parent).Parent == defendant.ID {
+		return
+	}
 	newHp := hp.Decrease(dmg.Dmg)
 	log.Infof("dealt %d damage, old hp: %d, new hp: %d", dmg.Dmg, hp.Current, newHp.Current)
 	defendant = defendant.SetComponents(newHp)

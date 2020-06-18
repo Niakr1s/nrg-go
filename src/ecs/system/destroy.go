@@ -60,6 +60,10 @@ func checkAndDestroyBulletContactedWithBody(bullet, body *entity.Entity) {
 	if !bullet.HasTags(tag.Bullet) || body.GetComponents(component.GroundID) == nil {
 		return
 	}
+	if parentCs := bullet.GetComponents(component.ParentID); parentCs != nil &&
+		parentCs[0].(entity.Parent).Parent == body.ID {
+		return
+	}
 	bullet.SetTags(tag.Destroyed)
 }
 

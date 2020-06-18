@@ -12,6 +12,7 @@ const (
 	DamageID
 	HpID
 	WeaponID
+	ParentID
 )
 
 type Component interface {
