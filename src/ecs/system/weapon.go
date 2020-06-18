@@ -4,7 +4,6 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
-	log "github.com/sirupsen/logrus"
 )
 
 type Weapon struct {
@@ -46,7 +45,7 @@ func (w *Weapon) spawnBullets() []*entity.Entity {
 
 				newPos := pos.Sum(moveDiff)
 				bullet.SetComponents(newPos)
-				log.Tracef("spawned bullet at %v", newPos)
+				// log.Tracef("spawned bullet at %v", newPos)
 
 				bullets = append(bullets, bullet)
 			}
@@ -64,11 +63,7 @@ func (w *Weapon) addBulletsToRegistry(bullets []*entity.Entity) {
 	}
 	w.reg.Lock()
 	defer w.reg.Unlock()
-	lenBefore := len(w.reg.Entities)
 	for _, b := range bullets {
 		w.reg.AddEntity(b)
 	}
-	lenAfter := len(w.reg.Entities)
-	log.Tracef("Weapon.addBulletsToRegistry: added %d bullets, len(entities): %d -> %d",
-		len(bullets), lenBefore, lenAfter)
 }

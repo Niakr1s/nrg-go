@@ -50,6 +50,21 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 					e.Unlock()
 				}
 				res.reg.RUnlock()
+			case changedWeapDir := <-res.results.WeaponDirCh:
+				log.Tracef("weap dir changed: %v", changedWeapDir)
+				res.reg.RLock()
+				for _, e := range res.reg.Entities {
+					e.Lock()
+					if weapC := e.GetComponents(component.WeaponID); weapC != nil {
+						weap := weapC[0].(component.Weapon)
+						if wdir, ok := weap.WeaponDir().(component.UserControlledWeaponDirection); ok {
+							newDir := wdir.NewDirection(changedWeapDir)
+							weap.SetDirection(newDir)
+						}
+					}
+					e.Unlock()
+				}
+				res.reg.RUnlock()
 			}
 		}
 	}()
@@ -59,6 +74,7 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 
 func (k *KeyBoard) Step() {
 	vectorChanged := false
+	weaponDirChanged := false
 	for eKey, Key := range k.keyBindings {
 		eKey, Key := eKey, Key
 		if inpututil.IsKeyJustPressed(eKey) {
@@ -68,6 +84,9 @@ func (k *KeyBoard) Step() {
 			case Up, Down, Left, Right:
 				vectorChanged = true
 				k.keyStates[Key] = true
+			case WeapLeft, WeapRight:
+				weaponDirChanged = true
+				k.keyStates[Key] = true
 			}
 		} else if inpututil.IsKeyJustReleased(eKey) {
 			switch Key {
@@ -76,11 +95,17 @@ func (k *KeyBoard) Step() {
 			case Up, Down, Left, Right:
 				vectorChanged = true
 				k.keyStates[Key] = false
+			case WeapLeft, WeapRight:
+				weaponDirChanged = true
+				k.keyStates[Key] = false
 			}
 		}
 	}
 	if vectorChanged {
 		k.results.VectorCh <- getVector(k.keyStates[Up], k.keyStates[Down], k.keyStates[Left], k.keyStates[Right])
+	}
+	if weaponDirChanged {
+		k.results.WeaponDirCh <- getWeaponDir(k.keyStates[WeapLeft], k.keyStates[WeapRight])
 	}
 }
 
@@ -111,15 +136,19 @@ const (
 	Down
 	Left
 	Right
+
+	WeapLeft
+	WeapRight
 )
 
 type ListenResult struct {
-	FireCh   chan bool
-	VectorCh chan *component.Vector
+	FireCh      chan bool
+	VectorCh    chan *component.Vector
+	WeaponDirCh chan component.WeaponDir
 }
 
 func NewListenResult() ListenResult {
-	return ListenResult{FireCh: make(chan bool), VectorCh: make(chan *component.Vector)}
+	return ListenResult{FireCh: make(chan bool), VectorCh: make(chan *component.Vector), WeaponDirCh: make(chan component.WeaponDir)}
 }
 
 // Bindings ...
@@ -130,17 +159,13 @@ func NewDefaultBindings() Bindings {
 	return Bindings(map[ebiten.Key]Key{
 		ebiten.KeySpace: Fire,
 
-		ebiten.KeyUp: Up,
-		ebiten.KeyW:  Up,
+		ebiten.KeyW: Up,
+		ebiten.KeyS: Down,
+		ebiten.KeyA: Left,
+		ebiten.KeyD: Right,
 
-		ebiten.KeyDown: Down,
-		ebiten.KeyS:    Down,
-
-		ebiten.KeyLeft: Left,
-		ebiten.KeyA:    Left,
-
-		ebiten.KeyRight: Right,
-		ebiten.KeyD:     Right,
+		ebiten.KeyLeft:  WeapLeft,
+		ebiten.KeyRight: WeapRight,
 	})
 }
 
@@ -149,6 +174,16 @@ type keyStates map[Key]bool
 
 func newKeyStates() keyStates {
 	return keyStates(make(map[Key]bool))
+}
+
+func getWeaponDir(weapLeft, weapRight bool) component.WeaponDir {
+	if weapLeft && !weapRight {
+		return component.WeaponDirLeft
+	}
+	if !weapLeft && weapRight {
+		return component.WeaponDirRight
+	}
+	return component.WeaponDirZero
 }
 
 // getVector is dumbest function ever

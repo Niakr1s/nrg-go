@@ -10,6 +10,8 @@ import (
 type Weapon interface {
 	Fire() bool
 	GetGunDirs() []Vector
+	WeaponDir() WeaponDirection
+	SetDirection(WeaponDirection)
 }
 
 type AutoWeapon struct {
@@ -36,13 +38,16 @@ func NewAutoWeapon(gunsDirDiffs ...Vector) *AutoWeapon {
 	return res
 }
 
-func (w *AutoWeapon) SetDirection(dir WeaponDirection) *AutoWeapon {
+func (w *AutoWeapon) SetDirection(dir WeaponDirection) {
 	w.Dir = dir
-	return w
 }
 
 func (w *AutoWeapon) ID() ID {
 	return WeaponID
+}
+
+func (w *AutoWeapon) WeaponDir() WeaponDirection {
+	return w.Dir
 }
 
 func (w *AutoWeapon) SetReloadDuration(d time.Duration) *AutoWeapon {
