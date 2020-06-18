@@ -24,7 +24,10 @@ func main() {
 
 	client.Reg.AddEntity(entity.NewEnemy(component.NewPos(200, 200)).
 		SetComponents(component.NewWeapon(component.NewVector(0),
-			component.NewVector(0), component.NewVector(0.5*math.Pi), component.NewVector(math.Pi), component.NewVector(1.5*math.Pi))),
+			component.NewVector(0),
+			component.NewVector(0.5*math.Pi), component.NewVector(math.Pi), component.NewVector(1.5*math.Pi)).
+			SetDirection(component.NewAutoWeaponDirection(1.5*math.Pi, component.NewVector(0.5*math.Pi))),
+		),
 	)
 
 	client.Reg.AddEntity(entity.NewObstacle(component.NewPos(700, 200)))

@@ -48,5 +48,4 @@ func NewObstacle(pos component.Pos) *Entity {
 			pos,
 			component.NewGround(true),
 		)
-
 }
