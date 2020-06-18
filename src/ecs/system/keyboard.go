@@ -26,6 +26,17 @@ func NewKeyBoard(r *registry.Registry) *KeyBoard {
 			select {
 			case pressed := <-res.results.FireCh:
 				log.Tracef("fire key pressed, %v", pressed)
+				res.reg.RLock()
+				for _, e := range res.reg.Entities {
+					e.Lock()
+					if weapC := e.GetComponents(component.WeaponID); weapC != nil {
+						if userWeap, ok := weapC[0].(*component.UserControlledWeapon); ok {
+							userWeap.SetAutoAttack(pressed)
+						}
+					}
+					e.Unlock()
+				}
+				res.reg.RUnlock()
 			case changedVec := <-res.results.VectorCh:
 				res.reg.RLock()
 				for _, e := range res.reg.Entities {

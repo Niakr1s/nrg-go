@@ -38,7 +38,7 @@ func (c *Client) produceBoard() *ebiten.Image {
 				e.RUnlock()
 				continue
 			}
-			weap := weapC[0].(*component.Weapon)
+			weap := weapC[0].(component.Weapon)
 			dirs := weap.GetGunDirs()
 			for _, dir := range dirs {
 				endPos := shape.OuterPointInDirectionDiff(dir).Sum(pos)

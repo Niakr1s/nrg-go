@@ -34,7 +34,7 @@ func (w *Weapon) spawnBullets() []*entity.Entity {
 		}
 		pos := cs[0].(component.Pos)
 		shape := cs[1].(component.Shape)
-		weap := cs[2].(*component.Weapon)
+		weap := cs[2].(component.Weapon)
 
 		if weap.Fire() {
 			bulletDirections := weap.GetGunDirs()

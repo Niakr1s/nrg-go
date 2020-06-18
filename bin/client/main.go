@@ -18,12 +18,11 @@ func main() {
 	client.Init()
 
 	client.Reg.AddEntity(entity.NewUser(component.NewPos(500, 500)).
-		SetComponents(component.NewWeapon(component.NewVector(0),
-			component.NewVector(0), component.NewVector(math.Pi))),
+		SetComponents(component.NewUserControlledWeapon(component.NewVector(1.5 * math.Pi))),
 	)
 
 	client.Reg.AddEntity(entity.NewEnemy(component.NewPos(200, 200)).
-		SetComponents(component.NewWeapon(component.NewVector(0),
+		SetComponents(component.NewAutoWeapon(component.NewVector(0),
 			component.NewVector(0),
 			component.NewVector(0.5*math.Pi), component.NewVector(math.Pi), component.NewVector(1.5*math.Pi)).
 			SetDirection(component.NewAutoWeaponDirection(1.5*math.Pi, component.NewVector(0.3*math.Pi))),

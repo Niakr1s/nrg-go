@@ -7,7 +7,12 @@ import (
 	"github.com/niakr1s/nrg-go/src/config"
 )
 
-type Weapon struct {
+type Weapon interface {
+	Fire() bool
+	GetGunDirs() []Vector
+}
+
+type AutoWeapon struct {
 	Dir  WeaponDirection
 	Guns []*Gun
 
@@ -17,9 +22,9 @@ type Weapon struct {
 	ready      bool
 }
 
-// NewWeapon constructs Weapon with default reload duration and constant Direction.
-func NewWeapon(gunsDirDiffs ...Vector) *Weapon {
-	res := &Weapon{
+// NewAutoWeapon constructs Weapon with default reload duration and constant Direction.
+func NewAutoWeapon(gunsDirDiffs ...Vector) *AutoWeapon {
+	res := &AutoWeapon{
 		Dir:            NewVector(0),
 		Guns:           make([]*Gun, len(gunsDirDiffs)),
 		ReloadDuration: config.ReloadDuration,
@@ -31,28 +36,28 @@ func NewWeapon(gunsDirDiffs ...Vector) *Weapon {
 	return res
 }
 
-func (w *Weapon) SetDirection(dir WeaponDirection) *Weapon {
+func (w *AutoWeapon) SetDirection(dir WeaponDirection) *AutoWeapon {
 	w.Dir = dir
 	return w
 }
 
-func (w *Weapon) ID() ID {
+func (w *AutoWeapon) ID() ID {
 	return WeaponID
 }
 
-func (w *Weapon) SetReloadDuration(d time.Duration) *Weapon {
+func (w *AutoWeapon) SetReloadDuration(d time.Duration) *AutoWeapon {
 	w.ReloadDuration = d
 	return w
 }
 
-func (w *Weapon) IsReady() bool {
+func (w *AutoWeapon) IsReady() bool {
 	w.readyMutex.Lock()
 	defer w.readyMutex.Unlock()
 	return w.ready
 }
 
 // Fire gets directions of all guns and starts reload timer.
-func (w *Weapon) Fire() bool {
+func (w *AutoWeapon) Fire() bool {
 	if !w.IsReady() {
 		return false
 	}
@@ -60,7 +65,7 @@ func (w *Weapon) Fire() bool {
 	return true
 }
 
-func (w *Weapon) GetGunDirs() []Vector {
+func (w *AutoWeapon) GetGunDirs() []Vector {
 	res := make([]Vector, len(w.Guns))
 	for i, g := range w.Guns {
 		res[i] = g.DirectionDiff.Sum(w.Dir.Direction())
@@ -68,7 +73,7 @@ func (w *Weapon) GetGunDirs() []Vector {
 	return res
 }
 
-func (w *Weapon) startReloading() {
+func (w *AutoWeapon) startReloading() {
 	w.ready = false
 	go func() {
 		<-time.After(w.ReloadDuration)
@@ -82,6 +87,35 @@ type Gun struct {
 	DirectionDiff Vector
 }
 
-func NewGun(weap *Weapon, diff Vector) *Gun {
+func NewGun(weap *AutoWeapon, diff Vector) *Gun {
 	return &Gun{DirectionDiff: diff}
+}
+
+type UserControlledWeapon struct {
+	*AutoWeapon
+
+	autoAttackMutex sync.Mutex
+	autoAttack      bool
+}
+
+func NewUserControlledWeapon(gunsDirDiffs ...Vector) *UserControlledWeapon {
+	res := &UserControlledWeapon{
+		AutoWeapon: NewAutoWeapon(gunsDirDiffs...),
+	}
+	return res
+}
+
+func (w *UserControlledWeapon) Fire() bool {
+	w.autoAttackMutex.Lock()
+	defer w.autoAttackMutex.Unlock()
+	if !w.autoAttack {
+		return false
+	}
+	return w.AutoWeapon.Fire()
+}
+
+func (w *UserControlledWeapon) SetAutoAttack(attack bool) {
+	w.autoAttackMutex.Lock()
+	defer w.autoAttackMutex.Unlock()
+	w.autoAttack = attack
 }
