@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/ebitenutil"
 	"github.com/niakr1s/nrg-go/src/config"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
@@ -31,6 +32,17 @@ func (c *Client) produceBoard() *ebiten.Image {
 				drawCircle(board, image, pos, shape)
 			default:
 				logrus.Warningf("Client.produceBoard(): couldn't draw unknowh shape")
+			}
+			weapC := e.GetComponents(component.WeaponID)
+			if weapC == nil {
+				e.RUnlock()
+				continue
+			}
+			weap := weapC[0].(*component.Weapon)
+			dirs := weap.GetGunDirs()
+			for _, dir := range dirs {
+				endPos := shape.OuterPointInDirectionDiff(dir).Sum(pos)
+				ebitenutil.DrawLine(board, pos.X, pos.Y, endPos.X, endPos.Y, color.Black)
 			}
 		}
 		e.RUnlock()
