@@ -1,6 +1,7 @@
 package system
 
 import (
+	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/entity"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
 	"github.com/niakr1s/nrg-go/src/ecs/tag"
@@ -18,7 +19,21 @@ func (c *Clean) Step() {
 	c.reg.Lock()
 	defer c.reg.Unlock()
 
+	setDestroyedTagsForDoneAnimations(c.reg.Entities)
 	c.reg.Entities = removeDestroyed(c.reg.Entities)
+}
+
+func setDestroyedTagsForDoneAnimations(entities []*entity.Entity) {
+	for _, e := range entities {
+		e.Lock()
+		if animC := e.GetComponents(component.AnimationID); animC != nil {
+			anim := animC[0].(component.Animation)
+			if anim.Done() {
+				e.SetTags(tag.Destroyed)
+			}
+		}
+		e.Unlock()
+	}
 }
 
 func removeDestroyed(entities []*entity.Entity) []*entity.Entity {
