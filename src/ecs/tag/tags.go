@@ -44,3 +44,7 @@ func (e Tags) CopyTags() map[ID]struct{} {
 	}
 	return res
 }
+
+func (e Tags) IsAllyWith(rhs Tags) bool {
+	return e.HasTags(User) && rhs.HasTags(User) || e.HasTags(Enemy) && rhs.HasTags(Enemy)
+}

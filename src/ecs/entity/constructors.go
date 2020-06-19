@@ -7,15 +7,17 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/tag"
 )
 
-func NewDefaultBullet(pos component.Pos, vec component.Vector, parent EntityID) *Entity {
+func NewDefaultBullet(pos component.Pos, vec component.Vector, parent *Entity) *Entity {
+	damage := component.NewDamage(10)
+	damage.AlliedTags = parent.Tags.CopyTags()
 	return NewEntity().
 		SetComponents(
 			component.NewCircle(20),
 			pos,
 			vec,
 			component.NewSpeed(5),
-			component.NewDamage(10),
-			NewParent(parent),
+			damage,
+			NewParent(parent.ID),
 		).
 		SetTags(tag.Bullet)
 }

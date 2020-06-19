@@ -79,8 +79,7 @@ func dealDamage(attacker, defendant *entity.Entity) (damaged bool, destroyed boo
 		return
 	}
 	dmg, hp := dmgCs[0].(component.Damage), hpCs[0].(component.HP)
-	if parentCs := attacker.GetComponents(component.ParentID); parentCs != nil &&
-		parentCs[0].(entity.Parent).Parent == defendant.ID {
+	if dmg.AlliedTags.IsAllyWith(defendant.Tags) {
 		return
 	}
 	newHp := hp.Decrease(dmg.Dmg)

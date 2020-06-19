@@ -1,5 +1,7 @@
 package component
 
+import "github.com/niakr1s/nrg-go/src/ecs/tag"
+
 type HP struct {
 	MaxHP   int
 	Current int
@@ -27,11 +29,12 @@ func (hp HP) Percent() float64 {
 }
 
 type Damage struct {
-	Dmg int
+	Dmg        int
+	AlliedTags tag.Tags
 }
 
 func NewDamage(dmg int) Damage {
-	return Damage{Dmg: dmg}
+	return Damage{Dmg: dmg, AlliedTags: make(tag.Tags)}
 }
 
 func (d Damage) ID() ID {
