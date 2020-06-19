@@ -15,12 +15,12 @@ type Entity struct {
 	sync.RWMutex
 
 	Components map[component.ID]component.Component
-	Tags       map[tag.ID]struct{}
+	Tags       tag.Tags
 }
 
 // NewEntity constructs Entity with ID=0 and empty Components
 func NewEntity() *Entity {
-	return &Entity{Components: make(map[component.ID]component.Component), Tags: make(map[tag.ID]struct{})}
+	return &Entity{Components: make(map[component.ID]component.Component), Tags: make(tag.Tags)}
 }
 
 func (e *Entity) SetID(id EntityID) *Entity {
@@ -57,24 +57,19 @@ func (e *Entity) RemoveComponents(ids ...component.ID) *Entity {
 }
 
 func (e *Entity) SetTags(ids ...tag.ID) *Entity {
-	for _, id := range ids {
-		e.Tags[id] = struct{}{}
-	}
+	e.Tags.SetTags(ids...)
 	return e
 }
 
 // HasTags returns false if any is missing
 func (e *Entity) HasTags(ids ...tag.ID) bool {
-	for _, id := range ids {
-		if _, ok := e.Tags[id]; !ok {
-			return false
-		}
-	}
-	return true
+	return e.Tags.HasTags(ids...)
 }
 
 func (e *Entity) RemoveTags(ids ...tag.ID) {
-	for _, id := range ids {
-		delete(e.Tags, id)
-	}
+	e.Tags.RemoveTags(ids...)
+}
+
+func (e *Entity) CopyTags() tag.Tags {
+	return e.Tags.CopyTags()
 }
