@@ -25,11 +25,29 @@ func (c *Client) produceBoard() *ebiten.Image {
 			pos := cs[1].(component.Pos)
 			drawShape(board, e, pos, shape)
 			drawWeapon(board, e, pos, shape)
+			drawHp(board, e, pos, shape)
 		}
 		e.RUnlock()
 	}
 	c.Reg.RUnlock()
 	return board
+}
+
+func drawHp(board *ebiten.Image, e *entity.Entity, pos component.Pos, shape component.Shape) {
+	hpC := e.GetComponents(component.HpID)
+	if hpC == nil {
+		return
+	}
+	hp := hpC[0].(component.HP)
+	center := shape.OuterPointInDirectionDiff(component.TopVec).Sum(pos).Move(component.TopVec, 10)
+	w := shape.Bound(pos).Width()
+	drawRectWithCenter(board, center, w, 3.0, color.White)
+	drawRectWithCenter(board, center, w*hp.Percent(), 3.0, color.RGBA{0, 200, 0, 255})
+}
+
+func drawRectWithCenter(dst *ebiten.Image, center component.Pos, w, h float64, clr color.Color) {
+	topLeft := center.MoveDist(component.TopVec, h/2).MoveDist(component.LeftVec, w/2)
+	ebitenutil.DrawRect(dst, topLeft.X, topLeft.Y, w, h, clr)
 }
 
 func drawShape(board *ebiten.Image, e *entity.Entity, pos component.Pos, shape component.Shape) {

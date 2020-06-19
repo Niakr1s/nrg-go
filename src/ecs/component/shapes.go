@@ -32,6 +32,14 @@ func (b Bound) Outside(other Bound) bool {
 		b.BotRight.X < other.TopLeft.X || b.BotRight.Y < other.TopLeft.Y
 }
 
+func (b Bound) Width() float64 {
+	return b.BotRight.X - b.TopLeft.X
+}
+
+func (b Bound) Height() float64 {
+	return b.BotRight.Y - b.TopLeft.Y
+}
+
 // Circle ..
 type Circle struct {
 	R float64

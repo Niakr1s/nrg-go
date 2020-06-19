@@ -1,11 +1,12 @@
 package component
 
 type HP struct {
+	MaxHP   int
 	Current int
 }
 
 func NewHP(maxHP int) HP {
-	return HP{Current: maxHP}
+	return HP{Current: maxHP, MaxHP: maxHP}
 }
 
 func (hp HP) ID() ID {
@@ -19,6 +20,10 @@ func (hp HP) Decrease(amount int) HP {
 
 func (hp HP) IsDead() bool {
 	return hp.Current <= 0
+}
+
+func (hp HP) Percent() float64 {
+	return float64(hp.Current) / float64(hp.MaxHP)
 }
 
 type Damage struct {
