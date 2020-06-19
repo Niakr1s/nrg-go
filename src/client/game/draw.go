@@ -1,4 +1,4 @@
-package client
+package game
 
 import (
 	"image/color"
@@ -14,11 +14,11 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func (c *Client) produceBoard() *ebiten.Image {
+func (g *Game) produceBoard() *ebiten.Image {
 	board, _ := ebiten.NewImage(config.BoardWidth, config.BoardHeight, ebiten.FilterDefault)
 	board.Fill(color.Gray16{0xaaaf})
-	c.Reg.RLock()
-	for _, e := range c.Reg.Entities {
+	g.Reg.RLock()
+	for _, e := range g.Reg.Entities {
 		e.RLock()
 		if cs := e.GetComponents(component.ShapeID, component.PosID); cs != nil {
 			shape := cs[0].(component.Shape)
@@ -36,7 +36,7 @@ func (c *Client) produceBoard() *ebiten.Image {
 		}
 		e.RUnlock()
 	}
-	c.Reg.RUnlock()
+	g.Reg.RUnlock()
 	return board
 }
 
@@ -115,8 +115,8 @@ func drawCircle(board, image *ebiten.Image, pos component.Pos, circle component.
 	board.DrawImage(image, op)
 }
 
-func (c *Client) drawBoard(screen *ebiten.Image) {
-	board := c.produceBoard()
+func (g *Game) drawBoard(screen *ebiten.Image) {
+	board := g.produceBoard()
 	op := &ebiten.DrawImageOptions{}
 
 	swI, shI := screen.Size()
