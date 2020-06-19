@@ -23,32 +23,39 @@ func (c *Client) produceBoard() *ebiten.Image {
 		if cs := e.GetComponents(component.ShapeID, component.PosID); cs != nil {
 			shape := cs[0].(component.Shape)
 			pos := cs[1].(component.Pos)
-			switch shape := shape.(type) {
-			case component.Circle:
-				image, err := img.Load(getCirclePath(e))
-				if err != nil {
-					panic(err)
-				}
-				drawCircle(board, image, pos, shape)
-			default:
-				logrus.Warningf("Client.produceBoard(): couldn't draw unknowh shape")
-			}
-			weapC := e.GetComponents(component.WeaponID)
-			if weapC == nil {
-				e.RUnlock()
-				continue
-			}
-			weap := weapC[0].(component.Weapon)
-			dirs := weap.GetGunDirs()
-			for _, dir := range dirs {
-				endPos := shape.OuterPointInDirectionDiff(dir).Sum(pos)
-				ebitenutil.DrawLine(board, pos.X, pos.Y, endPos.X, endPos.Y, color.Black)
-			}
+			drawShape(board, e, pos, shape)
+			drawWeapon(board, e, pos, shape)
 		}
 		e.RUnlock()
 	}
 	c.Reg.RUnlock()
 	return board
+}
+
+func drawShape(board *ebiten.Image, e *entity.Entity, pos component.Pos, shape component.Shape) {
+	switch shape := shape.(type) {
+	case component.Circle:
+		image, err := img.Load(getCirclePath(e))
+		if err != nil {
+			panic(err)
+		}
+		drawCircle(board, image, pos, shape)
+	default:
+		logrus.Warningf("Client.produceBoard(): couldn't draw unknowh shape")
+	}
+}
+
+func drawWeapon(board *ebiten.Image, e *entity.Entity, pos component.Pos, shape component.Shape) {
+	weapC := e.GetComponents(component.WeaponID)
+	if weapC == nil {
+		return
+	}
+	weap := weapC[0].(component.Weapon)
+	dirs := weap.GetGunDirs()
+	for _, dir := range dirs {
+		endPos := shape.OuterPointInDirectionDiff(dir).Sum(pos)
+		ebitenutil.DrawLine(board, pos.X, pos.Y, endPos.X, endPos.Y, color.Black)
+	}
 }
 
 func getCirclePath(e *entity.Entity) string {
