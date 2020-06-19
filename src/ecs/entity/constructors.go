@@ -1,6 +1,8 @@
 package entity
 
 import (
+	"math"
+
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/tag"
 )
@@ -57,4 +59,18 @@ func NewExplodeAnimation(pos component.Pos) *Entity {
 			pos,
 			component.NewExplodeAnimation(),
 		)
+}
+
+func NewEnemyWeaponWith4Guns() *component.AutoWeapon {
+	enemyWeap := component.NewAutoWeapon(component.NewVector(0),
+		component.NewVector(0),
+		component.NewVector(0.5*math.Pi), component.NewVector(math.Pi), component.NewVector(1.5*math.Pi))
+	enemyWeap.SetDirection(component.NewAutoWeaponDirection(1.5*math.Pi, component.NewVector(0.3*math.Pi)))
+	return enemyWeap
+}
+
+func NewUserWeaponWith1Gun() *component.UserControlledWeapon {
+	userWeap := component.NewUserControlledWeapon(component.NewVector(0))
+	userWeap.SetDirection(component.NewUserControlledWeaponDirection(component.NewVector(1.5*math.Pi), component.NewVector(0.3*math.Pi)))
+	return userWeap
 }
