@@ -27,10 +27,27 @@ func (c *Client) produceBoard() *ebiten.Image {
 			drawWeapon(board, e, pos, shape)
 			drawHp(board, e, pos, shape)
 		}
+		if cs := e.GetComponents(component.PosID, component.AnimationID); cs != nil {
+			pos := cs[0].(component.Pos)
+			anim := cs[1].(component.Animation)
+			if !anim.Done() {
+				drawAnimation(board, pos, anim)
+			}
+		}
 		e.RUnlock()
 	}
 	c.Reg.RUnlock()
 	return board
+}
+
+func drawAnimation(board *ebiten.Image, pos component.Pos, anim component.Animation) {
+	image := anim.GetImage()
+	op := &ebiten.DrawImageOptions{}
+	w, h := image.Size()
+	op.GeoM.Translate(-float64(w)/2, -float64(h)/2)
+	op.GeoM.Translate(pos.X, pos.Y)
+	board.DrawImage(image, op)
+	anim.Step()
 }
 
 func drawHp(board *ebiten.Image, e *entity.Entity, pos component.Pos, shape component.Shape) {

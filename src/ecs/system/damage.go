@@ -17,6 +17,22 @@ func NewDamage(reg *registry.Registry) *Damage {
 }
 
 func (d *Damage) Step() {
+	destroyedPoses := d.dealDamageAll()
+	d.addExplosions(destroyedPoses)
+}
+
+func (d *Damage) addExplosions(poses []component.Pos) {
+	d.reg.Lock()
+	defer d.reg.Unlock()
+	for _, explosionPos := range poses {
+		d.reg.AddEntity(entity.NewExplodeAnimation(explosionPos))
+	}
+}
+
+// dealDamageAll iterates through whole registry and deals damage.
+// Returns poses of destroyed entities.
+func (d *Damage) dealDamageAll() []component.Pos {
+	destroyedPoses := []component.Pos{}
 	d.reg.RLock()
 	defer d.reg.RUnlock()
 	for i := range d.reg.Entities {
@@ -43,15 +59,22 @@ func (d *Damage) Step() {
 				rhs.Unlock()
 				continue
 			}
-			dealDamage(lhs, rhs)
-			dealDamage(rhs, lhs)
+			_, destroyed := dealDamage(lhs, rhs)
+			if destroyed {
+				destroyedPoses = append(destroyedPoses, rPos)
+			}
+			_, destroyed = dealDamage(rhs, lhs)
+			if destroyed {
+				destroyedPoses = append(destroyedPoses, lPos)
+			}
 			rhs.Unlock()
 		}
 		lhs.Unlock()
 	}
+	return destroyedPoses
 }
 
-func dealDamage(attacker, defendant *entity.Entity) {
+func dealDamage(attacker, defendant *entity.Entity) (damaged bool, destroyed bool) {
 	dmgCs := attacker.GetComponents(component.DamageID)
 	hpCs := defendant.GetComponents(component.HpID)
 	if dmgCs == nil || hpCs == nil {
@@ -63,9 +86,12 @@ func dealDamage(attacker, defendant *entity.Entity) {
 		return
 	}
 	newHp := hp.Decrease(dmg.Dmg)
+	damaged = true
 	log.Infof("dealt %d damage, old hp: %d, new hp: %d", dmg.Dmg, hp.Current, newHp.Current)
 	defendant = defendant.SetComponents(newHp)
 	if newHp.IsDead() {
+		destroyed = true
 		defendant.SetTags(tag.Destroyed)
 	}
+	return
 }

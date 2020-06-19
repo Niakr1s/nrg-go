@@ -18,6 +18,10 @@ const (
 	WhiteCircle = "data/white_circle.png"
 	RedCircle   = "data/red_circle.png"
 	BlueCircle  = "data/blue_circle.png"
+
+	Explosion0 = "data/explosion/explosion0.png"
+	Explosion1 = "data/explosion/explosion1.png"
+	Explosion2 = "data/explosion/explosion2.png"
 )
 
 func init() {

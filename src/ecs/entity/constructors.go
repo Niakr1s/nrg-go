@@ -50,3 +50,11 @@ func NewObstacle(pos component.Pos) *Entity {
 			component.NewGround(true),
 		)
 }
+
+func NewExplodeAnimation(pos component.Pos) *Entity {
+	return NewEntity().
+		SetComponents(
+			pos,
+			component.NewExplodeAnimation(),
+		)
+}

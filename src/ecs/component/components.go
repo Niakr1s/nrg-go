@@ -13,6 +13,7 @@ const (
 	HpID
 	WeaponID
 	ParentID
+	AnimationID
 )
 
 type Component interface {
