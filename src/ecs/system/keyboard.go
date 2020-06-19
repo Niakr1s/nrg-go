@@ -7,72 +7,69 @@ import (
 	"github.com/hajimehoshi/ebiten/inpututil"
 	"github.com/niakr1s/nrg-go/src/ecs/component"
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
-	"github.com/niakr1s/nrg-go/src/ecs/tag"
-	log "github.com/sirupsen/logrus"
 )
 
 type KeyBoard struct {
 	keyBindings Bindings
 	keyStates   keyStates
 	results     ListenResult
-	reg         *registry.Registry
 }
 
-func NewKeyBoard(r *registry.Registry) *KeyBoard {
-	res := &KeyBoard{keyBindings: NewDefaultBindings(), keyStates: newKeyStates(), results: NewListenResult(), reg: r}
+func NewKeyBoard() *KeyBoard {
+	res := &KeyBoard{keyBindings: NewDefaultBindings(), keyStates: newKeyStates(), results: NewListenResult()}
 
-	go func() {
-		for {
-			select {
-			case pressed := <-res.results.FireCh:
-				log.Tracef("fire key pressed, %v", pressed)
-				res.reg.RLock()
-				for _, e := range res.reg.Entities {
-					e.Lock()
-					if weapC := e.GetComponents(component.WeaponID); weapC != nil {
-						if userWeap, ok := weapC[0].(*component.UserControlledWeapon); ok {
-							userWeap.SetAutoAttack(pressed)
-						}
-					}
-					e.Unlock()
-				}
-				res.reg.RUnlock()
-			case changedVec := <-res.results.VectorCh:
-				res.reg.RLock()
-				for _, e := range res.reg.Entities {
-					e.Lock()
-					if e.HasTags(tag.User) {
-						e = e.RemoveComponents(component.VectorID)
-						if changedVec != nil {
-							e = e.SetComponents(*changedVec)
-						}
-					}
-					e.Unlock()
-				}
-				res.reg.RUnlock()
-			case changedWeapDir := <-res.results.WeaponDirCh:
-				log.Tracef("weap dir changed: %v", changedWeapDir)
-				res.reg.RLock()
-				for _, e := range res.reg.Entities {
-					e.Lock()
-					if weapC := e.GetComponents(component.WeaponID); weapC != nil {
-						weap := weapC[0].(component.Weapon)
-						if wdir, ok := weap.WeaponDir().(component.UserControlledWeaponDirection); ok {
-							newDir := wdir.NewDirection(changedWeapDir)
-							weap.SetDirection(newDir)
-						}
-					}
-					e.Unlock()
-				}
-				res.reg.RUnlock()
-			}
-		}
-	}()
+	// go func() {
+	// 	for {
+	// 		select {
+	// 		case pressed := <-res.results.FireCh:
+	// 			log.Tracef("fire key pressed, %v", pressed)
+	// 			res.reg.RLock()
+	// 			for _, e := range res.reg.Entities {
+	// 				e.Lock()
+	// 				if weapC := e.GetComponents(component.WeaponID); weapC != nil {
+	// 					if userWeap, ok := weapC[0].(*component.UserControlledWeapon); ok {
+	// 						userWeap.SetAutoAttack(pressed)
+	// 					}
+	// 				}
+	// 				e.Unlock()
+	// 			}
+	// 			res.reg.RUnlock()
+	// 		case changedVec := <-res.results.VectorCh:
+	// 			res.reg.RLock()
+	// 			for _, e := range res.reg.Entities {
+	// 				e.Lock()
+	// 				if e.HasTags(tag.User) {
+	// 					e = e.RemoveComponents(component.VectorID)
+	// 					if changedVec != nil {
+	// 						e = e.SetComponents(*changedVec)
+	// 					}
+	// 				}
+	// 				e.Unlock()
+	// 			}
+	// 			res.reg.RUnlock()
+	// 		case changedWeapDir := <-res.results.WeaponDirCh:
+	// 			log.Tracef("weap dir changed: %v", changedWeapDir)
+	// 			res.reg.RLock()
+	// 			for _, e := range res.reg.Entities {
+	// 				e.Lock()
+	// 				if weapC := e.GetComponents(component.WeaponID); weapC != nil {
+	// 					weap := weapC[0].(component.Weapon)
+	// 					if wdir, ok := weap.WeaponDir().(component.UserControlledWeaponDirection); ok {
+	// 						newDir := wdir.NewDirection(changedWeapDir)
+	// 						weap.SetDirection(newDir)
+	// 					}
+	// 				}
+	// 				e.Unlock()
+	// 			}
+	// 			res.reg.RUnlock()
+	// 		}
+	// 	}
+	// }()
 
 	return res
 }
 
-func (k *KeyBoard) Step() {
+func (k *KeyBoard) Step(reg *registry.Registry) {
 	vectorChanged := false
 	weaponDirChanged := false
 	for eKey, Key := range k.keyBindings {

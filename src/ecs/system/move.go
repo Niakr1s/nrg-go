@@ -7,18 +7,17 @@ import (
 )
 
 type Move struct {
-	reg            *registry.Registry
 	boardW, boardH float64
 }
 
-func NewMove(reg *registry.Registry, boardW, boardH float64) *Move {
-	return &Move{reg: reg, boardW: boardW, boardH: boardH}
+func NewMove(boardW, boardH float64) *Move {
+	return &Move{boardW: boardW, boardH: boardH}
 }
 
-func (m *Move) Step() {
-	m.reg.RLock()
-	defer m.reg.RUnlock()
-	for _, e := range m.reg.Entities {
+func (m *Move) Step(reg *registry.Registry) {
+	reg.RLock()
+	defer reg.RUnlock()
+	for _, e := range reg.Entities {
 		m.moveOneEntity(e)
 	}
 }

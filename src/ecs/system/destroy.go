@@ -8,24 +8,23 @@ import (
 )
 
 type Destroy struct {
-	reg            *registry.Registry
 	boardW, boardH float64
 }
 
-func NewDestroy(reg *registry.Registry, boardW, boardH float64) *Destroy {
-	return &Destroy{reg: reg, boardW: boardW, boardH: boardH}
+func NewDestroy(boardW, boardH float64) *Destroy {
+	return &Destroy{boardW: boardW, boardH: boardH}
 }
 
-func (d *Destroy) Step() {
-	d.destroyBulletsOutOfBoard()
-	d.destroyBulletsContactedWithGroundBodies()
+func (d *Destroy) Step(reg *registry.Registry) {
+	d.destroyBulletsOutOfBoard(reg)
+	d.destroyBulletsContactedWithGroundBodies(reg)
 }
 
-func (d *Destroy) destroyBulletsContactedWithGroundBodies() {
-	d.reg.RLock()
-	defer d.reg.RUnlock()
-	for i := range d.reg.Entities {
-		lhs := d.reg.Entities[i]
+func (d *Destroy) destroyBulletsContactedWithGroundBodies(reg *registry.Registry) {
+	reg.RLock()
+	defer reg.RUnlock()
+	for i := range reg.Entities {
+		lhs := reg.Entities[i]
 		lhs.Lock()
 		lcs := lhs.GetComponents(component.PosID, component.ShapeID)
 		if lcs == nil {
@@ -34,8 +33,8 @@ func (d *Destroy) destroyBulletsContactedWithGroundBodies() {
 		}
 		lPos := lcs[0].(component.Pos)
 		lShape := lcs[1].(component.Shape)
-		for j := i + 1; j < len(d.reg.Entities); j++ {
-			rhs := d.reg.Entities[j]
+		for j := i + 1; j < len(reg.Entities); j++ {
+			rhs := reg.Entities[j]
 			rhs.Lock()
 			rcs := rhs.GetComponents(component.PosID, component.ShapeID)
 			if rcs == nil {
@@ -67,11 +66,11 @@ func checkAndDestroyBulletContactedWithBody(bullet, body *entity.Entity) {
 	bullet.SetTags(tag.Destroyed)
 }
 
-func (d *Destroy) destroyBulletsOutOfBoard() {
+func (d *Destroy) destroyBulletsOutOfBoard(reg *registry.Registry) {
 	boardBound := component.Bound{TopLeft: component.NewPos(0, 0), BotRight: component.NewPos(d.boardW, d.boardH)}
-	d.reg.RLock()
-	defer d.reg.RUnlock()
-	for _, e := range d.reg.Entities {
+	reg.RLock()
+	defer reg.RUnlock()
+	for _, e := range reg.Entities {
 		e.Lock()
 		cs := e.GetComponents(component.PosID, component.ShapeID)
 		if cs == nil || !e.HasTags(tag.Bullet) {

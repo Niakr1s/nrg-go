@@ -7,20 +7,18 @@ import (
 
 // Bounce is a system, that bounces ground bodies with each other.
 // It's a very naive implementation though.
-type Bounce struct {
-	reg *registry.Registry
+type Bounce struct{}
+
+func NewBounce() *Bounce {
+	return &Bounce{}
 }
 
-func NewBounce(reg *registry.Registry) *Bounce {
-	return &Bounce{reg: reg}
-}
+func (b *Bounce) Step(reg *registry.Registry) {
+	reg.RLock()
+	defer reg.RUnlock()
 
-func (b *Bounce) Step() {
-	b.reg.RLock()
-	defer b.reg.RUnlock()
-
-	for i := 0; i < len(b.reg.Entities); i++ {
-		lhs := b.reg.Entities[i]
+	for i := 0; i < len(reg.Entities); i++ {
+		lhs := reg.Entities[i]
 		lhs.Lock()
 		lcs := lhs.GetComponents(component.PosID, component.ShapeID, component.GroundID)
 		if lcs == nil {
@@ -30,8 +28,8 @@ func (b *Bounce) Step() {
 		lhsPos := lcs[0].(component.Pos)
 		lhsShape := lcs[1].(component.Shape)
 		lhsGround := lcs[2].(component.Ground)
-		for j := i + 1; j < len(b.reg.Entities); j++ {
-			rhs := b.reg.Entities[j]
+		for j := i + 1; j < len(reg.Entities); j++ {
+			rhs := reg.Entities[j]
 			rhs.Lock()
 			rcs := rhs.GetComponents(component.PosID, component.ShapeID, component.GroundID)
 			if rcs == nil {

@@ -17,8 +17,8 @@ import (
 func (g *Game) produceBoard() *ebiten.Image {
 	board, _ := ebiten.NewImage(config.BoardWidth, config.BoardHeight, ebiten.FilterDefault)
 	board.Fill(color.Gray16{0xaaaf})
-	g.Reg.RLock()
-	for _, e := range g.Reg.Entities {
+	g.level.Reg.RLock()
+	for _, e := range g.level.Reg.Entities {
 		e.RLock()
 		if cs := e.GetComponents(component.ShapeID, component.PosID); cs != nil {
 			shape := cs[0].(component.Shape)
@@ -36,7 +36,7 @@ func (g *Game) produceBoard() *ebiten.Image {
 		}
 		e.RUnlock()
 	}
-	g.Reg.RUnlock()
+	g.level.Reg.RUnlock()
 	return board
 }
 

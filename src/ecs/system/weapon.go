@@ -6,25 +6,23 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/registry"
 )
 
-type Weapon struct {
-	reg *registry.Registry
+type Weapon struct{}
+
+func NewWeapon() *Weapon {
+	return &Weapon{}
 }
 
-func NewWeapon(reg *registry.Registry) *Weapon {
-	return &Weapon{reg: reg}
+func (w *Weapon) Step(reg *registry.Registry) {
+	bullets := w.spawnBullets(reg)
+	w.addBulletsToRegistry(reg, bullets)
 }
 
-func (w *Weapon) Step() {
-	bullets := w.spawnBullets()
-	w.addBulletsToRegistry(bullets)
-}
-
-func (w *Weapon) spawnBullets() []*entity.Entity {
-	w.reg.RLock()
-	defer w.reg.RUnlock()
+func (w *Weapon) spawnBullets(reg *registry.Registry) []*entity.Entity {
+	reg.RLock()
+	defer reg.RUnlock()
 
 	bullets := []*entity.Entity{}
-	for _, e := range w.reg.Entities {
+	for _, e := range reg.Entities {
 		e.RLock()
 		cs := e.GetComponents(component.PosID, component.ShapeID, component.WeaponID)
 		if cs == nil {
@@ -57,13 +55,13 @@ func (w *Weapon) spawnBullets() []*entity.Entity {
 	return bullets
 }
 
-func (w *Weapon) addBulletsToRegistry(bullets []*entity.Entity) {
+func (w *Weapon) addBulletsToRegistry(reg *registry.Registry, bullets []*entity.Entity) {
 	if len(bullets) == 0 {
 		return
 	}
-	w.reg.Lock()
-	defer w.reg.Unlock()
+	reg.Lock()
+	defer reg.Unlock()
 	for _, b := range bullets {
-		w.reg.AddEntity(b)
+		reg.AddEntity(b)
 	}
 }

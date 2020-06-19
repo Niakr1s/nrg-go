@@ -8,18 +8,17 @@ import (
 
 // Contain is a system, that contains ground bodies inside board.
 type Contain struct {
-	reg            *registry.Registry
 	boardW, boardH float64
 }
 
-func NewContain(reg *registry.Registry, boardW, boardH float64) *Contain {
-	return &Contain{reg: reg, boardW: boardW, boardH: boardH}
+func NewContain(boardW, boardH float64) *Contain {
+	return &Contain{boardW: boardW, boardH: boardH}
 }
 
-func (c *Contain) Step() {
-	c.reg.RLock()
-	defer c.reg.RUnlock()
-	for _, e := range c.reg.Entities {
+func (c *Contain) Step(reg *registry.Registry) {
+	reg.RLock()
+	defer reg.RUnlock()
+	for _, e := range reg.Entities {
 		c.correctEntityInBoard(e)
 	}
 }

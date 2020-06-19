@@ -8,35 +8,33 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type Damage struct {
-	reg *registry.Registry
+type Damage struct{}
+
+func NewDamage() *Damage {
+	return &Damage{}
 }
 
-func NewDamage(reg *registry.Registry) *Damage {
-	return &Damage{reg: reg}
+func (d *Damage) Step(reg *registry.Registry) {
+	destroyedPoses := d.dealDamageAll(reg)
+	d.addExplosions(reg, destroyedPoses)
 }
 
-func (d *Damage) Step() {
-	destroyedPoses := d.dealDamageAll()
-	d.addExplosions(destroyedPoses)
-}
-
-func (d *Damage) addExplosions(poses []component.Pos) {
-	d.reg.Lock()
-	defer d.reg.Unlock()
+func (d *Damage) addExplosions(reg *registry.Registry, poses []component.Pos) {
+	reg.Lock()
+	defer reg.Unlock()
 	for _, explosionPos := range poses {
-		d.reg.AddEntity(entity.NewExplodeAnimation(explosionPos))
+		reg.AddEntity(entity.NewExplodeAnimation(explosionPos))
 	}
 }
 
 // dealDamageAll iterates through whole registry and deals damage.
 // Returns poses of destroyed entities.
-func (d *Damage) dealDamageAll() []component.Pos {
+func (d *Damage) dealDamageAll(reg *registry.Registry) []component.Pos {
 	destroyedPoses := []component.Pos{}
-	d.reg.RLock()
-	defer d.reg.RUnlock()
-	for i := range d.reg.Entities {
-		lhs := d.reg.Entities[i]
+	reg.RLock()
+	defer reg.RUnlock()
+	for i := range reg.Entities {
+		lhs := reg.Entities[i]
 		lhs.Lock()
 		lcs := lhs.GetComponents(component.PosID, component.ShapeID)
 		if lcs == nil {
@@ -45,8 +43,8 @@ func (d *Damage) dealDamageAll() []component.Pos {
 		}
 		lPos := lcs[0].(component.Pos)
 		lShape := lcs[1].(component.Shape)
-		for j := i + 1; j < len(d.reg.Entities); j++ {
-			rhs := d.reg.Entities[j]
+		for j := i + 1; j < len(reg.Entities); j++ {
+			rhs := reg.Entities[j]
 			rhs.Lock()
 			rcs := rhs.GetComponents(component.PosID, component.ShapeID)
 			if rcs == nil {

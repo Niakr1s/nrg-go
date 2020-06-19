@@ -49,8 +49,8 @@ func TestDamage_Step(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			runTest := func(r *registry.Registry) {
 				startHp := tt.user.Components[component.HpID].(component.HP).Current
-				d := NewDamage(r)
-				d.Step()
+				d := NewDamage()
+				d.Step(r)
 				endHp := tt.user.Components[component.HpID].(component.HP).Current
 				assert.Equal(t, tt.wantHpDecrease, startHp-endHp)
 			}

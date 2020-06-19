@@ -7,20 +7,18 @@ import (
 	"github.com/niakr1s/nrg-go/src/ecs/tag"
 )
 
-type Clean struct {
-	reg *registry.Registry
+type Clean struct{}
+
+func NewClean() *Clean {
+	return &Clean{}
 }
 
-func NewClean(reg *registry.Registry) *Clean {
-	return &Clean{reg: reg}
-}
+func (c *Clean) Step(reg *registry.Registry) {
+	reg.Lock()
+	defer reg.Unlock()
 
-func (c *Clean) Step() {
-	c.reg.Lock()
-	defer c.reg.Unlock()
-
-	setDestroyedTagsForDoneAnimations(c.reg.Entities)
-	c.reg.Entities = removeDestroyed(c.reg.Entities)
+	setDestroyedTagsForDoneAnimations(reg.Entities)
+	reg.Entities = removeDestroyed(reg.Entities)
 }
 
 func setDestroyedTagsForDoneAnimations(entities []*entity.Entity) {
