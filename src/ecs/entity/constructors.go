@@ -36,7 +36,7 @@ func NewEnemy(pos component.Pos) *Entity {
 			component.NewCircle(50),
 			pos,
 			component.NewSpeed(10),
-			component.NewGround(false),
+			component.NewGround(true),
 			component.NewHP(100),
 		).
 		SetTags(tag.Enemy)
