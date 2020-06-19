@@ -41,15 +41,23 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		s.Step(g.level.Reg)
 	}
 	if g.status.LevelCompleted {
-		if !g.level.NextLevel() {
-			os.Exit(0)
-		}
+		g.onLevelCompleted()
 	}
 	if g.status.LevelFailed {
-		g.level.LoadLevel()
+		g.onLevelFail()
 	}
 	g.status.Reset()
 	return nil
+}
+
+func (g *Game) onLevelCompleted() {
+	if !g.level.NextLevel() {
+		os.Exit(0)
+	}
+}
+
+func (g *Game) onLevelFail() {
+	g.level.LoadLevel()
 }
 
 func (g *Game) Draw(screen *ebiten.Image) {
