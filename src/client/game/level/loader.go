@@ -18,7 +18,11 @@ func NewLoader() *Loader {
 	return &Loader{levelFuncs: getInitLevelFuncs()}
 }
 
-func (l *Loader) LoadLevel() bool {
+func (l *Loader) ReloadLevel() {
+	l.Reg = l.levelFuncs[l.current]()
+}
+
+func (l *Loader) NextLevel() bool {
 	if l.current >= len(l.levelFuncs) {
 		return false
 	}

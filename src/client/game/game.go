@@ -28,7 +28,7 @@ func (g *Game) Init() {
 		system.NewDestroy(config.BoardWidth, config.BoardHeight),
 		system.NewClean(),
 	)
-	g.level.LoadLevel()
+	g.level.NextLevel()
 }
 
 func (g *Game) Update(screen *ebiten.Image) error {
