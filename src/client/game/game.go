@@ -5,6 +5,7 @@ import (
 
 	"github.com/hajimehoshi/ebiten"
 	"github.com/niakr1s/nrg-go/src/client/game/level"
+	"github.com/niakr1s/nrg-go/src/client/state"
 	"github.com/niakr1s/nrg-go/src/config"
 	"github.com/niakr1s/nrg-go/src/ecs/system"
 )
@@ -13,6 +14,7 @@ type Game struct {
 	systems []system.System
 	level   *level.Loader
 	status  *system.Status
+	next    state.State
 }
 
 func NewGame() *Game {
@@ -63,4 +65,8 @@ func (g *Game) onLevelFail() {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawBoard(screen)
 
+}
+
+func (g *Game) Next() state.State {
+	return g.next
 }

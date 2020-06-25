@@ -28,6 +28,9 @@ func (c *Client) Init() {
 
 // Update ...
 func (c *Client) Update(screen *ebiten.Image) error {
+	if next := c.state.Next(); next != nil {
+		c.state = next
+	}
 	return c.state.Update(screen)
 }
 
