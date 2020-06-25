@@ -14,6 +14,7 @@ const (
 	WeaponID
 	ParentID
 	AnimationID
+	FractionID
 )
 
 type Component interface {
