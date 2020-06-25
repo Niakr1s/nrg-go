@@ -79,9 +79,15 @@ func dealDamage(attacker, defendant *entity.Entity) (damaged bool, destroyed boo
 		return
 	}
 	dmg, hp := dmgCs[0].(component.Damage), hpCs[0].(component.HP)
-	if dmg.AlliedTags.IsAllyWith(defendant.Tags) {
-		return
+
+	// return if attacker and defendand both allies
+	if aCs, dCs := attacker.GetComponents(component.FractionID), defendant.GetComponents(component.FractionID); aCs != nil && dCs != nil {
+		af, df := aCs[0].(component.Fraction), dCs[0].(component.Fraction)
+		if af.IsAllyWith(df) {
+			return
+		}
 	}
+
 	newHp := hp.Decrease(dmg.Dmg)
 	damaged = true
 	log.Infof("dealt %d damage, old hp: %d, new hp: %d", dmg.Dmg, hp.Current, newHp.Current)

@@ -9,8 +9,7 @@ import (
 
 func NewDefaultBullet(pos component.Pos, vec component.Vector, parent *Entity) *Entity {
 	damage := component.NewDamage(10)
-	damage.AlliedTags = parent.Tags.CopyTags()
-	return NewEntity().
+	res := NewEntity().
 		SetComponents(
 			component.NewCircle(20),
 			pos,
@@ -20,6 +19,11 @@ func NewDefaultBullet(pos component.Pos, vec component.Vector, parent *Entity) *
 			NewParent(parent.ID),
 		).
 		SetTags(tag.Bullet)
+	if cs := parent.GetComponents(component.FractionID); cs != nil {
+		fraction := cs[0].(component.Fraction)
+		res.SetComponents(fraction)
+	}
+	return res
 }
 
 func NewUser(pos component.Pos) *Entity {
@@ -30,6 +34,7 @@ func NewUser(pos component.Pos) *Entity {
 			component.NewSpeed(10),
 			component.NewGround(false),
 			component.NewHP(100),
+			component.FractionAlly,
 		).
 		SetTags(tag.User)
 }
@@ -42,6 +47,7 @@ func NewEnemy(pos component.Pos) *Entity {
 			component.NewSpeed(10),
 			component.NewGround(true),
 			component.NewHP(100),
+			component.FractionEnemy,
 		).
 		SetTags(tag.Enemy)
 }

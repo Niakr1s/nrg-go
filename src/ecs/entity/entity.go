@@ -69,7 +69,3 @@ func (e *Entity) HasTags(ids ...tag.ID) bool {
 func (e *Entity) RemoveTags(ids ...tag.ID) {
 	e.Tags.RemoveTags(ids...)
 }
-
-func (e *Entity) CopyTags() tag.Tags {
-	return e.Tags.CopyTags()
-}

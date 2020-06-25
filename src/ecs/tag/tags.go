@@ -36,15 +36,3 @@ func (e Tags) RemoveTags(ids ...ID) {
 		delete(e, id)
 	}
 }
-
-func (e Tags) CopyTags() map[ID]struct{} {
-	res := map[ID]struct{}{}
-	for k, v := range e {
-		res[k] = v
-	}
-	return res
-}
-
-func (e Tags) IsAllyWith(rhs Tags) bool {
-	return e.HasTags(User) && rhs.HasTags(User) || e.HasTags(Enemy) && rhs.HasTags(Enemy)
-}
