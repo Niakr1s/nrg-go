@@ -16,11 +16,11 @@ type Game struct {
 	systems []system.System
 	level   *level.Loader
 	status  *system.Status
-	next    state.State
+	*state.NextState
 }
 
 func NewGame() *Game {
-	res := &Game{systems: make([]system.System, 0), level: level.NewLoader()}
+	res := &Game{systems: make([]system.System, 0), level: level.NewLoader(), NextState: state.NewNext()}
 	res.init()
 	return res
 }
@@ -55,7 +55,7 @@ func (g *Game) Update(screen *ebiten.Image) error {
 	g.status.Reset()
 	if isPauseRequested() {
 		log.Print("pause is requested")
-		g.next = NewPauseMenu(g)
+		g.SetNext(NewPauseMenu(g))
 	}
 	return nil
 }
@@ -77,8 +77,4 @@ func (g *Game) onLevelFail() {
 func (g *Game) Draw(screen *ebiten.Image) {
 	g.drawBoard(screen)
 
-}
-
-func (g *Game) Next() state.State {
-	return g.next
 }

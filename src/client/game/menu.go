@@ -12,19 +12,19 @@ import (
 )
 
 type Menu struct {
-	next   state.State
+	*state.NextState
 	layout widget.Layout
 }
 
 func NewMenu() *Menu {
-	menu := &Menu{layout: widget.NewLayout()}
+	menu := &Menu{layout: widget.NewLayout(), NextState: state.NewNext()}
 	return menu
 }
 
 func NewMainMenu() *Menu {
 	menu := NewMenu()
 	menu.SetButtons(
-		button{"Start", func() { menu.next = NewGame() }},
+		button{"Start", func() { menu.SetNext(NewGame()) }},
 		button{"Exit", func() { os.Exit(0) }},
 	)
 	return menu
@@ -33,8 +33,8 @@ func NewMainMenu() *Menu {
 func NewPauseMenu(paused state.State) *Menu {
 	menu := NewMenu()
 	menu.SetButtons(
-		button{"Continue", func() { menu.next = paused }},
-		button{"Main menu", func() { menu.next = NewMainMenu() }},
+		button{"Continue", func() { menu.SetNext(paused) }},
+		button{"Main menu", func() { menu.SetNext(NewMainMenu()) }},
 		button{"Exit", func() { os.Exit(0) }},
 	)
 	return menu
@@ -78,8 +78,4 @@ func (m *Menu) Draw(screen *ebiten.Image) {
 		op.GeoM.Translate(w.Pos.X, w.Pos.Y)
 		screen.DrawImage(w.Draw(), &op)
 	}
-}
-
-func (m *Menu) Next() state.State {
-	return m.next
 }
