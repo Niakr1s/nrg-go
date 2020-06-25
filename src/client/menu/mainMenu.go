@@ -1,4 +1,4 @@
-package startmenu
+package menu
 
 import (
 	"os"
@@ -12,13 +12,13 @@ import (
 	"github.com/niakr1s/nrg-go/src/widget"
 )
 
-type StartMenu struct {
+type MainMenu struct {
 	next   state.State
 	layout widget.Layout
 }
 
-func New() *StartMenu {
-	menu := &StartMenu{layout: widget.NewLayout()}
+func NewMainMenu() *MainMenu {
+	menu := &MainMenu{layout: widget.NewLayout()}
 	w := 200
 	x := (config.ScreenWidth - w) / 2
 	menu.layout.AddWidget(component.NewPos(float64(x), 200), widget.NewButton(w, 60, "Start", func() { menu.next = game.NewGame() }))
@@ -26,7 +26,7 @@ func New() *StartMenu {
 	return menu
 }
 
-func (m *StartMenu) Update(screen *ebiten.Image) error {
+func (m *MainMenu) Update(screen *ebiten.Image) error {
 	if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
 		x, y := ebiten.CursorPosition()
 		e := widget.NewMouseClickEvent(component.NewPos(float64(x), float64(y)))
@@ -35,7 +35,7 @@ func (m *StartMenu) Update(screen *ebiten.Image) error {
 	return nil
 }
 
-func (m *StartMenu) Draw(screen *ebiten.Image) {
+func (m *MainMenu) Draw(screen *ebiten.Image) {
 	for _, w := range m.layout {
 		op := ebiten.DrawImageOptions{}
 		op.GeoM.Translate(w.Pos.X, w.Pos.Y)
@@ -43,6 +43,6 @@ func (m *StartMenu) Draw(screen *ebiten.Image) {
 	}
 }
 
-func (m *StartMenu) Next() state.State {
+func (m *MainMenu) Next() state.State {
 	return m.next
 }
