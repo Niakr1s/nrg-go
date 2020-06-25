@@ -49,7 +49,7 @@ func (m *Menu) SetButtons(btns ...button) {
 	layout := widget.NewLayout()
 	l := len(btns)
 	const (
-		buttonW = 200
+		buttonW = 300
 		buttonH = 60
 		spaceH  = 40
 	)
