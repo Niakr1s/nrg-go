@@ -1,6 +1,8 @@
-package menu
+package game
 
 import (
+	"os"
+
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/inpututil"
 	"github.com/niakr1s/nrg-go/src/client/state"
@@ -16,6 +18,25 @@ type Menu struct {
 
 func NewMenu() *Menu {
 	menu := &Menu{layout: widget.NewLayout()}
+	return menu
+}
+
+func NewMainMenu() *Menu {
+	menu := NewMenu()
+	menu.SetButtons(
+		button{"Start", func() { menu.next = NewGame() }},
+		button{"Exit", func() { os.Exit(0) }},
+	)
+	return menu
+}
+
+func NewPauseMenu(paused state.State) *Menu {
+	menu := NewMenu()
+	menu.SetButtons(
+		button{"Continue", func() { menu.next = paused }},
+		button{"Main menu", func() { menu.next = NewMainMenu() }},
+		button{"Exit", func() { os.Exit(0) }},
+	)
 	return menu
 }
 

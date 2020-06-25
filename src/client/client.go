@@ -2,7 +2,7 @@ package client
 
 import (
 	"github.com/hajimehoshi/ebiten"
-	"github.com/niakr1s/nrg-go/src/client/menu"
+	"github.com/niakr1s/nrg-go/src/client/game"
 	"github.com/niakr1s/nrg-go/src/client/state"
 	"github.com/niakr1s/nrg-go/src/config"
 )
@@ -14,9 +14,7 @@ type Client struct {
 
 // New ...
 func New() *Client {
-
-	mainMenu := menu.NewMainMenu()
-	return &Client{state: mainMenu}
+	return &Client{state: game.NewMainMenu()}
 }
 
 // Init ...

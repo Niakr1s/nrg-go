@@ -1,9 +1,11 @@
 package game
 
 import (
+	"log"
 	"os"
 
 	"github.com/hajimehoshi/ebiten"
+	"github.com/hajimehoshi/ebiten/inpututil"
 	"github.com/niakr1s/nrg-go/src/client/game/level"
 	"github.com/niakr1s/nrg-go/src/client/state"
 	"github.com/niakr1s/nrg-go/src/config"
@@ -51,7 +53,15 @@ func (g *Game) Update(screen *ebiten.Image) error {
 		g.onLevelFail()
 	}
 	g.status.Reset()
+	if isPauseRequested() {
+		log.Print("pause is requested")
+		g.next = NewPauseMenu(g)
+	}
 	return nil
+}
+
+func isPauseRequested() bool {
+	return inpututil.IsKeyJustPressed(ebiten.KeyEscape)
 }
 
 func (g *Game) onLevelCompleted() {
