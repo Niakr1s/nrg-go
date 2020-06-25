@@ -1,7 +1,5 @@
 package config
 
-import "time"
-
 // screen
 const (
 	ScreenWidth  = 800
@@ -13,5 +11,5 @@ const (
 
 // game
 const (
-	ReloadDuration = time.Second
+	ReloadDuration = 60
 )
