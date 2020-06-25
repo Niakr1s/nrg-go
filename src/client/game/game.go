@@ -18,11 +18,13 @@ type Game struct {
 }
 
 func NewGame() *Game {
-	return &Game{systems: make([]system.System, 0), level: level.NewLoader()}
+	res := &Game{systems: make([]system.System, 0), level: level.NewLoader()}
+	res.init()
+	return res
 }
 
 // Init ...
-func (g *Game) Init() {
+func (g *Game) init() {
 	g.status = system.NewStatus()
 	g.systems = append(g.systems,
 		system.NewKeyBoard(),
